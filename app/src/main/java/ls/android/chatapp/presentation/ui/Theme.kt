@@ -1,4 +1,4 @@
-package hr.carnet.chatap.presentation.theme.ui
+package ls.android.chatapp.presentation.ui
 
 import android.app.Activity
 import android.os.Build
@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import hr.carnet.chatap.presentation.theme.ui.Typography
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
