@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ChatApp"
+rootProject.name = "GhostThread"
 include(":app")
