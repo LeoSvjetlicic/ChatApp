@@ -38,6 +38,7 @@ fun BottomBar(
                 },
             imageId = R.drawable.ic_clip
         ) {
+            // todo maybe a camera instead
             onClipClick()
         }
 
