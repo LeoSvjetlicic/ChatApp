@@ -1,4 +1,4 @@
-package ls.android.chatapp
+package ls.android.chatapp.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
