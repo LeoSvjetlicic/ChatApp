@@ -1,4 +1,4 @@
-package hr.carnet.chatap.common
+package ls.android.chatapp.common
 
 object Constants {
 

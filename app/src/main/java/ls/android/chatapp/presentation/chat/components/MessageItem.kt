@@ -73,7 +73,7 @@ fun MessageItem(
         }
         Image(
             modifier = Modifier.align(Alignment.BottomEnd),
-            painter = painterResource(id = R.drawable.mingcute_heart_fill),
+            painter = painterResource(id = R.drawable.ic_heart),
             contentDescription = "Heart"
         )
     }
