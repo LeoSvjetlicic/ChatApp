@@ -4,9 +4,10 @@ import androidx.compose.ui.graphics.Color
 
 val IceBlue = Color(0xFFCCFFFF)
 val DarkBlue = Color(0xFF7690AC)
-val IceBlue_p90 = Color(0x99CCFFFF)
-val DarkBlue_p90 = Color(0x997690AC)
 val DarkGray = Color(0xFF333333)
+val IceBlue_p70 = Color(0x99CCFFFF)
+val DarkBlue_p70 = Color(0x997690AC)
+val DarkGray_p70 = Color(0x99333333)
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)

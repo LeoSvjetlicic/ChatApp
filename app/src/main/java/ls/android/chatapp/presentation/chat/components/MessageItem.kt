@@ -21,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ls.android.chatapp.R
 import ls.android.chatapp.domain.model.Message
-import ls.android.chatapp.presentation.ui.DarkBlue_p90
+import ls.android.chatapp.presentation.ui.DarkBlue_p70
 import ls.android.chatapp.presentation.ui.DarkGray
-import ls.android.chatapp.presentation.ui.IceBlue_p90
+import ls.android.chatapp.presentation.ui.IceBlue_p70
 
 @Composable
 fun MessageItem(
@@ -34,9 +34,9 @@ fun MessageItem(
     val bgColor by remember {
         mutableStateOf(
             if (message.senderId == "aldkcn") {
-                IceBlue_p90
+                IceBlue_p70
             } else {
-                DarkBlue_p90
+                DarkBlue_p70
             }
         )
     }
