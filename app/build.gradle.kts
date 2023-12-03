@@ -80,4 +80,7 @@ dependencies {
 
 // encrypted shared preferences
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+// constraint layout
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 }
