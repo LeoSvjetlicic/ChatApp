@@ -1,4 +1,4 @@
-package ls.android.chatapp.domain.components
+package ls.android.chatapp.common.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
