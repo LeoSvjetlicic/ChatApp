@@ -1,32 +1,37 @@
 package ls.android.chatapp.presentation.chat.components
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ls.android.chatapp.R
-import ls.android.chatapp.presentation.ui.DarkGray
 
 @Composable
 fun BottomBar(
     modifier: Modifier,
+    userInput: String,
+    onInputChanged: (String) -> Unit,
     onClipClick: () -> Unit,
     onSendClick: (String) -> Unit
 ) {
-    var userInput by remember {
-        mutableStateOf("")
-    }
+    val focusManager = LocalFocusManager.current
 
-    ConstraintLayout(modifier = modifier) {
+    ConstraintLayout(
+        modifier = modifier
+            .padding(horizontal = 8.dp)
+            .border(1.dp, Color.LightGray)
+    ) {
         val (clipButton, inputText, sendButton) = createRefs()
         ActionButton(
             modifier = Modifier
@@ -39,7 +44,7 @@ fun BottomBar(
             imageId = R.drawable.ic_clip
         ) {
             // todo maybe a camera instead
-            onClipClick()
+//            onClipClick()
         }
 
         BasicTextField(
@@ -50,14 +55,19 @@ fun BottomBar(
                     top.linkTo(parent.top, margin = 16.dp)
                     bottom.linkTo(parent.bottom, margin = 16.dp)
                     width = Dimension.fillToConstraints
+                }
+                .pointerInput(Unit) {
+                    detectTapGestures {
+                        focusManager.clearFocus()
+                    }
                 },
             singleLine = false,
             textStyle = TextStyle(
-                color = DarkGray,
+                color = Color.Gray,
                 fontSize = 14.sp,
             ),
             value = userInput,
-            onValueChange = { userInput = it }
+            onValueChange = { onInputChanged(it) }
         )
 
         ActionButton(

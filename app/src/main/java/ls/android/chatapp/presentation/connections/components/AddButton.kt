@@ -1,4 +1,4 @@
-package ls.android.chatapp.presentation.chat.components
+package ls.android.chatapp.presentation.connections.components
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
