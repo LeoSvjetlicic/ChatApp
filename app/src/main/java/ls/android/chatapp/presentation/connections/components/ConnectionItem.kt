@@ -15,7 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -27,13 +27,13 @@ import ls.android.chatapp.presentation.ui.IceBlue
 
 @Composable
 fun ConnectionItem(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     connection: Connection,
     onItemClick: (String) -> Unit
 ) {
     Card(
         modifier = modifier
-            .shadow(4.dp)
+            .clip(RoundedCornerShape(8.dp))
             .clickable { onItemClick(connection.id) },
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
@@ -42,7 +42,6 @@ fun ConnectionItem(
             disabledContainerColor = IceBlue,
             disabledContentColor = DarkBlue,
         )
-
     ) {
         Row(
             modifier = Modifier
@@ -62,6 +61,7 @@ fun ConnectionItem(
                     text = connection.name,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 18.sp,
+                    maxLines = 1,
                     color = DarkGray,
                 )
             }
@@ -75,7 +75,7 @@ fun ConnectionItem(
                         .align(Alignment.BottomEnd)
                         .padding(bottom = 8.dp, end = 8.dp),
                     text = "Connected for: ${connection.daysConnected} days",
-                    fontSize = 11.sp,
+                    fontSize = 10.sp,
                     color = DarkGray
                 )
             }

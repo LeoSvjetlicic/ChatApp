@@ -1,6 +1,5 @@
 package ls.android.chatapp.data.repository.mock
 
-import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -72,8 +71,6 @@ class MessagesRepositoryMock : MessagesRepository {
     override fun getMessages(receiverId: String): StateFlow<List<Message>> = messages
 
     override suspend fun doubleClickMessage(messageId: String) {
-        Log.d("akdisdv",messageId)
-        Log.d("akadisdva",_messages.value.toString())
         _messages.compareAndSet(
             _messages.value,
             (_messages.value.map {
