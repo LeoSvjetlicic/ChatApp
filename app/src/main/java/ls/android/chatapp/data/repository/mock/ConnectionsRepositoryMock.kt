@@ -23,7 +23,7 @@ class ConnectionsRepositoryMock : ConnectionRepository {
             _connections.value,
             (_connections.value + Connection(
                 (_connections.value.size + 1).toString(),
-                "Marko",
+                connection.name,
                 null,
                 1
             )) as MutableList<Connection>

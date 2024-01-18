@@ -86,5 +86,5 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
 // qrcode
-    implementation("com.journeyapps:zxing-android-embedded:4.1.0")
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }

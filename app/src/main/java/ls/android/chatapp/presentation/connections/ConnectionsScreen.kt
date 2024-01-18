@@ -2,6 +2,7 @@ package ls.android.chatapp.presentation.connections
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -29,14 +30,16 @@ fun ConnectionRoute(
     modifier: Modifier = Modifier,
     viewModel: ConnectionsViewModel,
     onItemClick: (String) -> Unit,
-    onAddButtonClick: () -> Unit
+    onAddButtonClick: () -> Unit,
+    onShowQRCodeButtonClick: () -> Unit
 ) {
     val connections by viewModel.connections.collectAsState(initial = ConnectionScreenState())
     ConnectionsScreen(
         modifier = modifier,
         connectionScreenState = connections,
         onItemClick = { onItemClick(it) },
-        onAddButtonClick = { onAddButtonClick() }
+        onAddButtonClick = { onAddButtonClick() },
+        onShowQRCodeButtonClick = { onShowQRCodeButtonClick() }
     )
 }
 
@@ -46,6 +49,7 @@ fun ConnectionsScreen(
     connectionScreenState: ConnectionScreenState,
     onItemClick: (String) -> Unit,
     onAddButtonClick: () -> Unit,
+    onShowQRCodeButtonClick: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -89,16 +93,29 @@ fun ConnectionsScreen(
             }
         }
 
-        ActionButton(
-            modifier = Modifier
-                .size(50.dp)
-                .constrainAs(button) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom, margin = 16.dp)
-                }, imageId = R.drawable.ic_add
-        ) {
-            onAddButtonClick()
+        Row(modifier = Modifier
+            .height(50.dp)
+            .constrainAs(button) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom, margin = 16.dp)
+                width = Dimension.wrapContent
+            }) {
+            ActionButton(
+                modifier = Modifier
+                    .padding(end = 20.dp)
+                    .size(50.dp),
+                imageId = R.drawable.ic_add
+            ) {
+                onAddButtonClick()
+            }
+            ActionButton(
+                modifier = Modifier.size(50.dp),
+                imageId = R.drawable.ic_qr_code
+            ) {
+                onShowQRCodeButtonClick()
+            }
         }
+
     }
 }

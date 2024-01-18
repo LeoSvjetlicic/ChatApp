@@ -10,26 +10,33 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.google.zxing.integration.android.IntentIntegrator
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanIntentResult
+import com.journeyapps.barcodescanner.ScanOptions
 import ls.android.chatapp.common.Constants
 import ls.android.chatapp.common.QRCodeGenerator
 import ls.android.chatapp.common.User
-import ls.android.chatapp.presentation.qr_code.QRCodeRoute
+import ls.android.chatapp.data.repository.mock.ConnectionsRepositoryMock
+import ls.android.chatapp.presentation.connections.ConnectionRoute
+import ls.android.chatapp.presentation.connections.ConnectionsViewModel
 import ls.android.chatapp.presentation.ui.ChatAppTheme
 import java.io.File
 import java.io.FileInputStream
 
+
 class MainActivity : ComponentActivity() {
     private val qrCodeFilePath = Constants.QR_CODE_VALUE
+    private val viewModel = ConnectionsViewModel(ConnectionsRepositoryMock())
     private val permissionRequestLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
         ) { permissions ->
-            // Handle Permission granted/rejected
             var permissionGranted = true
             permissions.entries.forEach {
                 if (it.key in REQUIRED_PERMISSIONS && !it.value) {
@@ -46,6 +53,11 @@ class MainActivity : ComponentActivity() {
                 startCamera()
             }
         }
+    private val barcodeLauncher = registerForActivityResult(
+        ScanContract()
+    ) { result: ScanIntentResult ->
+        viewModel.addItem(result.contents)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +66,7 @@ class MainActivity : ComponentActivity() {
             storageDir.mkdirs()
         }
         QRCodeGenerator.generateAndSaveQRCode(
-            User.id,
+            User.name,
             storageDir,
             qrCodeFilePath
         )
@@ -64,22 +76,21 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val qrCode = loadQRCodeBitmap(storageDir, qrCodeFilePath)
-                    QRCodeRoute(
-                        modifier = Modifier.fillMaxSize(),
-                        qrCode = qrCode
-                    )
+                    ConnectionRoute(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxSize(),
+                        viewModel = viewModel,
+                        {},
+                        { onAddClick() },
+                        { onShowQRCodeClick() })
                 }
             }
         }
     }
 
     private fun onShowQRCodeClick() {
-        if (allPermissionsGranted()) {
-            startCamera()
-        } else {
-            requestPermissions()
-        }
+//        todo navigate to qr code screen
     }
 
     private fun onAddClick() {
@@ -91,14 +102,15 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun startCamera() {
-        val integrator = IntentIntegrator(this)
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-        integrator.setPrompt("Scan a QR code")
-        integrator.setCameraId(0)
-        integrator.setOrientationLocked(false)
-        integrator.setBeepEnabled(true)
-        integrator.initiateScan()
+        val options = ScanOptions()
+        options.setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+        options.setPrompt("Scan a barcode")
+        options.setCameraId(0)
+        options.setOrientationLocked(false)
+        options.setBarcodeImageEnabled(false)
+        barcodeLauncher.launch(options)
     }
+
 
     private fun requestPermissions() {
         permissionRequestLauncher.launch(REQUIRED_PERMISSIONS)

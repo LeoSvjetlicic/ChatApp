@@ -1,5 +1,8 @@
 package ls.android.chatapp.common
 
+import java.util.UUID
+
 object User {
-    val id = "leo"
+    val id = UUID.randomUUID().toString()
+    val name = "Markannen"
 }

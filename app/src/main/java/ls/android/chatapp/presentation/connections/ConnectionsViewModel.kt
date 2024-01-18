@@ -7,11 +7,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import ls.android.chatapp.common.User
+import ls.android.chatapp.domain.model.Connection
 import ls.android.chatapp.domain.repository.ConnectionRepository
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConnectionsViewModel(
-    repository: ConnectionRepository
+    private val repository: ConnectionRepository
 ) : ViewModel() {
     val connections: Flow<ConnectionScreenState> = repository.getConnections().mapLatest {
         ConnectionScreenState(it)
@@ -20,4 +23,10 @@ class ConnectionsViewModel(
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = ConnectionScreenState()
     )
+
+    fun  addItem(scannedData: String) {
+        viewModelScope.launch {
+            repository.createConnections(Connection(scannedData + User.name, scannedData, null, 0))
+        }
+    }
 }
