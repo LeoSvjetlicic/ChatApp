@@ -36,7 +36,6 @@ fun MessageItem(
 ) {
     val interactionSource = MutableInteractionSource()
     val bgColor =
-// todo the userId that is saved
         if (message.senderId == User.id) {
             IceBlue_p70
         } else {
@@ -59,7 +58,7 @@ fun MessageItem(
             Card(
                 modifier = Modifier
                     .wrapContentHeight()
-                    .padding(end = 10.dp, bottom = 8.dp)
+                    .padding(end = 10.dp, bottom = 4.dp)
                     .pointerInput(interactionSource) {
                         detectTapGestures(
                             onDoubleTap = {

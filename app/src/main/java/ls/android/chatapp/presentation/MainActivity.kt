@@ -2,37 +2,35 @@ package ls.android.chatapp.presentation
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import dagger.hilt.android.AndroidEntryPoint
 import ls.android.chatapp.common.Constants
 import ls.android.chatapp.common.QRCodeGenerator
 import ls.android.chatapp.common.User
-import ls.android.chatapp.data.repository.mock.ConnectionsRepositoryMock
-import ls.android.chatapp.presentation.connections.ConnectionRoute
 import ls.android.chatapp.presentation.connections.ConnectionsViewModel
+import ls.android.chatapp.presentation.main.MainScreen
 import ls.android.chatapp.presentation.ui.ChatAppTheme
 import java.io.File
-import java.io.FileInputStream
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val qrCodeFilePath = Constants.QR_CODE_VALUE
-    private val viewModel = ConnectionsViewModel(ConnectionsRepositoryMock())
+    private lateinit var storageDir: File
+    private lateinit var connectionsViewModel: ConnectionsViewModel
     private val permissionRequestLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
@@ -53,15 +51,34 @@ class MainActivity : ComponentActivity() {
                 startCamera()
             }
         }
-    private val barcodeLauncher = registerForActivityResult(
+    private val barcodeLauncher: ActivityResultLauncher<ScanOptions> = registerForActivityResult(
         ScanContract()
     ) { result: ScanIntentResult ->
-        viewModel.addItem(result.contents)
+        if (result.contents != null) {
+            connectionsViewModel.addItem(result.contents)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val storageDir = File(this.filesDir, Constants.QR_CODE)
+        storageDir = File(filesDir, Constants.QR_CODE)
+        setContent {
+            ChatAppTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    MainScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        onAddButtonClick = { onAddClick() },
+                        onShowButtonClick = { onShowQRCodeClick() },
+                        setConnectionViewModel = { connectionsViewModel = it })
+                }
+            }
+        }
+    }
+
+    private fun onShowQRCodeClick() {
         if (!storageDir.exists()) {
             storageDir.mkdirs()
         }
@@ -70,27 +87,6 @@ class MainActivity : ComponentActivity() {
             storageDir,
             qrCodeFilePath
         )
-        setContent {
-            ChatAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    ConnectionRoute(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxSize(),
-                        viewModel = viewModel,
-                        {},
-                        { onAddClick() },
-                        { onShowQRCodeClick() })
-                }
-            }
-        }
-    }
-
-    private fun onShowQRCodeClick() {
-//        todo navigate to qr code screen
     }
 
     private fun onAddClick() {
@@ -111,6 +107,9 @@ class MainActivity : ComponentActivity() {
         barcodeLauncher.launch(options)
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+    }
 
     private fun requestPermissions() {
         permissionRequestLauncher.launch(REQUIRED_PERMISSIONS)
@@ -123,26 +122,6 @@ class MainActivity : ComponentActivity() {
                 it
             ) == PackageManager.PERMISSION_GRANTED
         }
-
-    private fun loadQRCodeBitmap(storageDir: File, filePath: String): Bitmap? {
-        try {
-            val file = File(storageDir, filePath)
-
-            if (!file.exists()) {
-                return null
-            }
-
-            val options = BitmapFactory.Options()
-            options.inPreferredConfig = Bitmap.Config.RGB_565
-
-            val inputStream = FileInputStream(file)
-
-            return BitmapFactory.decodeStream(inputStream, null, options)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return null
-        }
-    }
 
     companion object {
         private val REQUIRED_PERMISSIONS =

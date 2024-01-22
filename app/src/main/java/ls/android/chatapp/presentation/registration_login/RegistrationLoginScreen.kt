@@ -29,7 +29,10 @@ fun RegistrationLoginRoute(viewModel: RegistrationLoginViewModel, onButtonClick:
         screenState = viewModel.screenState.value,
         onEmailChanged = viewModel::onEmailChange,
         onPasswordChanged = viewModel::onPasswordChange,
-        onButtonClick = { onButtonClick() },
+        onButtonClick = {
+            viewModel.onContinueClick()
+            onButtonClick()
+        },
         onTextClick = viewModel::onTextClick
     )
 }
@@ -47,9 +50,11 @@ fun RegistrationLoginScreen(
     val interactionSource = remember { MutableInteractionSource() }
 
     Column(
-        modifier = modifier.clickable(interactionSource = interactionSource, indication = null) {
-            focusManager.clearFocus()
-        },
+        modifier = modifier
+            .clickable(interactionSource = interactionSource, indication = null) {
+                focusManager.clearFocus()
+            }
+            .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {

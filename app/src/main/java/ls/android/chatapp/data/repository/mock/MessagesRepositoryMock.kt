@@ -8,8 +8,9 @@ import ls.android.chatapp.domain.model.Message
 import ls.android.chatapp.domain.repository.MessagesRepository
 import java.text.SimpleDateFormat
 import java.util.Date
+import javax.inject.Inject
 
-class MessagesRepositoryMock : MessagesRepository {
+class MessagesRepositoryMock @Inject constructor() : MessagesRepository {
     private val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
     private val currentDate: String = sdf.format(Date())
     private val _messages = MutableStateFlow(

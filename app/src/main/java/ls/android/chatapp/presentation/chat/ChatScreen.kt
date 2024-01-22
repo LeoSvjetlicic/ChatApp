@@ -16,9 +16,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import ls.android.chatapp.data.repository.mock.MessagesRepositoryMock
 import ls.android.chatapp.presentation.chat.components.BottomBar
 import ls.android.chatapp.presentation.chat.components.MessageItem
 import ls.android.chatapp.presentation.chat.components.NameTag
@@ -28,6 +30,7 @@ fun ChatRoute(
     chatViewModel: ChatViewModel,
 ) {
     val messages: ChatViewState by chatViewModel.messages.collectAsState(ChatViewState())
+
     ChatScreen(
         modifier = Modifier,
         viewState = messages,
@@ -98,7 +101,7 @@ fun ChatScreen(
 
         NameTag(modifier = Modifier
             .constrainAs(nameTag) {
-                top.linkTo(parent.top, margin = 8.dp)
+                top.linkTo(parent.top, margin = 58.dp)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             }
@@ -122,4 +125,10 @@ fun ChatScreen(
                 }
             })
     }
+}
+
+@Preview
+@Composable
+fun k(){
+    ChatRoute(chatViewModel = ChatViewModel("afa",MessagesRepositoryMock()))
 }

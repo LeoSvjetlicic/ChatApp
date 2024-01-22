@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -22,14 +22,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun QRCodeRoute(modifier: Modifier, qrCode: Bitmap?) {
-    QRCodeScreen(modifier = modifier, qrCode = qrCode)
+fun QRCodeRoute(viewModel: QRCodeViewModel) {
+    QRCodeScreen(modifier = Modifier, qrCode = viewModel.bitmap)
 }
 
 @Composable
 fun QRCodeScreen(modifier: Modifier, qrCode: Bitmap?) {
     var scale by remember {
-        mutableStateOf(1F)
+        mutableFloatStateOf(1F)
     }
     Box(modifier = modifier) {
         val state = rememberTransformableState { zoomChange, _, _ ->

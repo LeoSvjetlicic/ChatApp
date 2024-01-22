@@ -5,8 +5,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ls.android.chatapp.domain.model.Connection
 import ls.android.chatapp.domain.repository.ConnectionRepository
+import javax.inject.Inject
 
-class ConnectionsRepositoryMock : ConnectionRepository {
+class ConnectionsRepositoryMock @Inject constructor() : ConnectionRepository {
     private val _connections = MutableStateFlow(
         mutableListOf(
             Connection("1", "Leo", null, 30),

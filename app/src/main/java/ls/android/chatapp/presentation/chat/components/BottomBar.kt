@@ -34,9 +34,10 @@ fun BottomBar(
             .border(1.dp, Color.LightGray)
     ) {
         val (clipButton, inputText, sendButton) = createRefs()
+
         ActionButton(
             modifier = Modifier
-                .size(28.dp)
+                .size(40.dp)
                 .constrainAs(clipButton) {
                     top.linkTo(parent.top, margin = 16.dp)
                     bottom.linkTo(parent.bottom, margin = 16.dp)
@@ -73,7 +74,7 @@ fun BottomBar(
 
         ActionButton(
             modifier = Modifier
-                .size(28.dp)
+                .size(40.dp)
                 .constrainAs(sendButton) {
                     top.linkTo(parent.top, margin = 16.dp)
                     bottom.linkTo(parent.bottom, margin = 16.dp)
