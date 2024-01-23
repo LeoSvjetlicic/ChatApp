@@ -2,8 +2,8 @@ package ls.android.chatapp.presentation
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -51,11 +51,17 @@ class MainActivity : ComponentActivity() {
                 startCamera()
             }
         }
+
     private val barcodeLauncher: ActivityResultLauncher<ScanOptions> = registerForActivityResult(
         ScanContract()
     ) { result: ScanIntentResult ->
         if (result.contents != null) {
-            connectionsViewModel.addItem(result.contents)
+            Log.d("padf",result.contents.toString())
+            if (result.contents.startsWith(Constants.QR_CODE_APP_START)) {
+                connectionsViewModel.addItem(result.contents.substringAfter('/'))
+            } else {
+                Toast.makeText(this, "An error accured", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -81,9 +87,11 @@ class MainActivity : ComponentActivity() {
     private fun onShowQRCodeClick() {
         if (!storageDir.exists()) {
             storageDir.mkdirs()
+        }else{
+            storageDir.listFiles()?.forEach { it.deleteRecursively() }
         }
         QRCodeGenerator.generateAndSaveQRCode(
-            User.name,
+            Constants.QR_CODE_APP_START + User.name,
             storageDir,
             qrCodeFilePath
         )
@@ -105,10 +113,6 @@ class MainActivity : ComponentActivity() {
         options.setOrientationLocked(false)
         options.setBarcodeImageEnabled(false)
         barcodeLauncher.launch(options)
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
     }
 
     private fun requestPermissions() {
