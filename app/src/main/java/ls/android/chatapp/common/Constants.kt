@@ -2,6 +2,8 @@ package ls.android.chatapp.common
 
 object Constants {
     val QR_CODE_APP_START ="ghost_thread_app/"
+    val FIREBASE_CONNECTION ="connections"
+    val FIREBASE_MESSAGES ="messages"
     val QR_CODE ="my_qrcode"
     val QR_CODE_VALUE ="my_qrcode_value.png"
     const val CHAT_ROUTE = "chatRoute"

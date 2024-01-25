@@ -30,8 +30,7 @@ fun RegistrationLoginRoute(viewModel: RegistrationLoginViewModel, onButtonClick:
         onEmailChanged = viewModel::onEmailChange,
         onPasswordChanged = viewModel::onPasswordChange,
         onButtonClick = {
-            viewModel.onContinueClick()
-            onButtonClick()
+            viewModel.onContinueClick(onButtonClick)
         },
         onTextClick = viewModel::onTextClick
     )
@@ -102,9 +101,9 @@ fun RegistrationLoginScreen(
         ) {
             Text(
                 text = if (screenState.isLogin) {
-                    "Don't have an account?"
-                } else {
                     "Already have an account?"
+                } else {
+                    "Don't have an account?"
                 },
                 fontSize = 11.sp
             )

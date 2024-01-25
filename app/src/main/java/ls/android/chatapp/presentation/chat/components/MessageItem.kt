@@ -36,7 +36,7 @@ fun MessageItem(
 ) {
     val interactionSource = MutableInteractionSource()
     val bgColor =
-        if (message.senderId == User.id) {
+        if (message.sender == User.name) {
             IceBlue_p70
         } else {
             DarkBlue_p70
@@ -44,8 +44,9 @@ fun MessageItem(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        horizontalArrangement = if (message.senderId == User.id) {
+            .padding(vertical = 4.dp)
+            .padding(start = 16.dp, end = 24.dp),
+        horizontalArrangement = if (message.sender == User.name) {
             Arrangement.End
         } else {
             Arrangement.Start
@@ -83,7 +84,7 @@ fun MessageItem(
                     lineHeight = 18.sp
                 )
             }
-            if (message.isLiked) {
+            if (message.liked) {
                 Image(
                     modifier = Modifier.align(Alignment.BottomEnd),
                     painter = painterResource(id = R.drawable.ic_heart),

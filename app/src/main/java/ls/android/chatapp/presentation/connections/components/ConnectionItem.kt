@@ -20,10 +20,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ls.android.chatapp.common.User
 import ls.android.chatapp.domain.model.Connection
 import ls.android.chatapp.presentation.ui.DarkBlue
 import ls.android.chatapp.presentation.ui.DarkGray
 import ls.android.chatapp.presentation.ui.IceBlue
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.Locale
 
 @Composable
 fun ConnectionItem(
@@ -58,7 +63,8 @@ fun ConnectionItem(
                     modifier = Modifier
                         .padding(start = 14.dp)
                         .align(Alignment.CenterStart),
-                    text = connection.name,
+//                    I know it isn't a good practice but it is too late now
+                    text = getReceiver(connection.name),
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 18.sp,
                     maxLines = 1,
@@ -70,15 +76,39 @@ fun ConnectionItem(
                     .fillMaxHeight()
                     .weight(1F)
             ) {
+
                 Text(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(bottom = 8.dp, end = 8.dp),
-                    text = "Connected for: ${connection.daysConnected} days",
+                    text = "Connected for: ${getFormattedDate(connection)} days",
                     fontSize = 10.sp,
                     color = DarkGray
                 )
             }
         }
     }
+}
+
+fun getReceiver(receiverId: String): String {
+    val parts = receiverId.replace(User.name,"").split(".", "@").map { string ->
+        string.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.ROOT
+            ) else it.toString()
+        }
+    }
+
+    return parts[0]
+}
+
+fun getFormattedDate(connection: Connection): Long {
+    val creationDate = LocalDateTime.parse(
+        connection.created,
+        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    )
+
+    val currentDateTime = LocalDateTime.now()
+    return ChronoUnit.DAYS.between(creationDate, currentDateTime)
+
 }

@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import ls.android.chatapp.common.User
 import ls.android.chatapp.domain.model.Connection
 import ls.android.chatapp.domain.repository.ConnectionRepository
 import javax.inject.Inject
@@ -19,17 +19,21 @@ import javax.inject.Inject
 class ConnectionsViewModel @Inject constructor(
     private val repository: ConnectionRepository,
 ) : ViewModel() {
-    val connections: Flow<ConnectionScreenState> = repository.getConnections().mapLatest {
-        ConnectionScreenState(it)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = ConnectionScreenState()
-    )
+    private val _currentConnections = MutableStateFlow<List<Connection>>(emptyList())
+    val connections: Flow<ConnectionScreenState> = repository.getConnections()
+        .mapLatest {
+            _currentConnections.value = it
+            ConnectionScreenState(it)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = ConnectionScreenState()
+        )
 
     fun addItem(scannedData: String) {
         viewModelScope.launch {
-            repository.createConnections(Connection(scannedData + User.name, scannedData, null, 0))
+            repository.createConnections(scannedData, _currentConnections.value)
         }
     }
 }

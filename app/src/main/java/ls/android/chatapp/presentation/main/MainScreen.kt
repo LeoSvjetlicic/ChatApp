@@ -22,9 +22,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import ls.android.chatapp.common.Constants
-import ls.android.chatapp.common.components.TopBar
 import ls.android.chatapp.presentation.chat.ChatRoute
 import ls.android.chatapp.presentation.chat.ChatViewModel
+import ls.android.chatapp.presentation.common.components.TopBar
 import ls.android.chatapp.presentation.connections.ConnectionRoute
 import ls.android.chatapp.presentation.connections.ConnectionsViewModel
 import ls.android.chatapp.presentation.navigation.ChatRoute
@@ -107,10 +107,10 @@ fun MainScreen(
                     route = ChatRoute.route,
                     arguments = listOf(navArgument(Constants.CHAT_ID) { type = NavType.StringType })
                 ) { navBackStackEntry ->
-                    val receiverId = navBackStackEntry.arguments?.getString(Constants.CHAT_ID)
+                    val connectionId = navBackStackEntry.arguments?.getString(Constants.CHAT_ID)
                     val chatViewModel =
                         hiltViewModel<ChatViewModel, ChatViewModel.ChatViewModelFactory> { factory: ChatViewModel.ChatViewModelFactory ->
-                            factory.create(receiverId)
+                            factory.create(connectionId)
                         }
                     ChatRoute(chatViewModel = chatViewModel)
                 }

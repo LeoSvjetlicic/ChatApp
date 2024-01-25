@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ls.android.chatapp.R
-import ls.android.chatapp.common.components.ActionButton
+import ls.android.chatapp.presentation.common.components.ActionButton
 import ls.android.chatapp.presentation.connections.components.ConnectionItem
 
 @Composable
@@ -83,13 +83,12 @@ fun ConnectionsScreen(
             width = Dimension.matchParent
         }) {
             items(connectionScreenState.connections) { connection ->
-
                 ConnectionItem(
                     modifier = Modifier
                         .padding(vertical = 4.dp)
                         .height(50.dp),
                     connection = connection,
-                    onItemClick = { onItemClick(it) })
+                    onItemClick = { onItemClick(connection.name) })
             }
         }
 
@@ -116,6 +115,5 @@ fun ConnectionsScreen(
                 onShowQRCodeButtonClick()
             }
         }
-
     }
 }

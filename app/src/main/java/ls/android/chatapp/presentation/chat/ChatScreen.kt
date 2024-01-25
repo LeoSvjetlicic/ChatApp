@@ -16,11 +16,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import ls.android.chatapp.data.repository.mock.MessagesRepositoryMock
 import ls.android.chatapp.presentation.chat.components.BottomBar
 import ls.android.chatapp.presentation.chat.components.MessageItem
 import ls.android.chatapp.presentation.chat.components.NameTag
@@ -52,7 +50,7 @@ fun ChatScreen(
     messageInput: String,
     onUserInputChanged: (String) -> Unit,
     setIsSent: (Boolean) -> Unit,
-    onDoubleClick: (String) -> Unit,
+    onDoubleClick: (String, Boolean) -> Unit,
     onClipClick: () -> Unit,
     onSendClick: (String) -> Unit
 ) {
@@ -79,7 +77,7 @@ fun ChatScreen(
         LazyColumn(
             modifier = Modifier
                 .constrainAs(chat) {
-                    top.linkTo(parent.top)
+                    top.linkTo(parent.top, margin = 16.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     bottom.linkTo(bottomBar.top)
@@ -94,7 +92,7 @@ fun ChatScreen(
                     modifier = Modifier,
                     message = it,
                     onDoubleClick = { id ->
-                        onDoubleClick(id)
+                        onDoubleClick(id, it.liked)
                     })
             }
         }
@@ -125,10 +123,4 @@ fun ChatScreen(
                 }
             })
     }
-}
-
-@Preview
-@Composable
-fun k(){
-    ChatRoute(chatViewModel = ChatViewModel("afa",MessagesRepositoryMock()))
 }

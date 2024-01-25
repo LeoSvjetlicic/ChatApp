@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -19,19 +20,21 @@ import ls.android.chatapp.domain.repository.MessagesRepository
 
 @HiltViewModel(assistedFactory = ChatViewModel.ChatViewModelFactory::class)
 class ChatViewModel @AssistedInject constructor(
-    @Assisted val receiverId: String,
-    private val repository: MessagesRepository
+    @Assisted val connectionId: String,
+    private val repository: MessagesRepository,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
     @AssistedFactory
     fun interface ChatViewModelFactory {
-        fun create(receiverId: String?): ChatViewModel
+        fun create(connection: String?): ChatViewModel
     }
 
     var messageText: String by mutableStateOf("")
     var isSent: Boolean by mutableStateOf(false)
+    private val receiverId = connectionId.replace(auth.currentUser!!.email!!, "")
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val messages: Flow<ChatViewState> = repository.getMessages(receiverId).mapLatest {
+    val messages: Flow<ChatViewState> = repository.getMessages(connectionId).mapLatest {
         ChatViewState(repository.getReceiver(receiverId), it)
     }.stateIn(
         scope = viewModelScope,
@@ -47,15 +50,15 @@ class ChatViewModel @AssistedInject constructor(
         isSent = value
     }
 
-    fun onDoubleClick(id: String) {
+    fun onDoubleClick(id: String, isLiked: Boolean) {
         viewModelScope.launch {
-            repository.doubleClickMessage(id)
+            repository.doubleClickMessage(id, isLiked)
         }
     }
 
     fun onSendClick(text: String) {
         viewModelScope.launch {
-            repository.sendMessage(text)
+            repository.sendMessage(text, connectionId)
             isSent = true
             messageText = ""
         }
