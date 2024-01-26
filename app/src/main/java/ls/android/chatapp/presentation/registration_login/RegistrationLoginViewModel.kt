@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ls.android.chatapp.domain.repository.AuthenticationRepository
 import javax.inject.Inject
@@ -35,23 +33,18 @@ class RegistrationLoginViewModel @Inject constructor(
 
     fun onContinueClick(navigate: () -> Unit) {
         viewModelScope.launch {
-            async {
-                if (!screenState.value.isLogin) {
-                    authenticationRepository.loginUser(
-                        screenState.value.email,
-                        screenState.value.password
-                    )
-                } else {
-                    authenticationRepository.registerUser(
-                        screenState.value.email,
-                        screenState.value.password
-                    )
-                }
-                delay(500)
-            }.invokeOnCompletion {
-                if (firebaseAuth.currentUser != null) {
-                    navigate()
-                }
+            if (!screenState.value.isLogin) {
+                authenticationRepository.loginUser(
+                    screenState.value.email,
+                    screenState.value.password,
+                    navigate = navigate
+                )
+            } else {
+                authenticationRepository.registerUser(
+                    screenState.value.email,
+                    screenState.value.password,
+                    navigate = navigate
+                )
             }
         }
     }

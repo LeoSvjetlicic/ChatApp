@@ -21,6 +21,7 @@ class MessageRepositoryImpl @Inject constructor(
     private val context: Context
 ) : MessagesRepository {
     override suspend fun sendMessage(message: String, connectionId: String) {
+        if(message.isNotBlank()){
         val currentDateTime = LocalDateTime.now()
         val formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -40,6 +41,9 @@ class MessageRepositoryImpl @Inject constructor(
                 Toast.makeText(context, "An error occurred. Try again.", Toast.LENGTH_SHORT).show()
                 e.printStackTrace()
             }
+        }else{
+            Toast.makeText(context,"You can't send an empty message.",Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun getMessages(connectionId: String): Flow<List<Message>> {

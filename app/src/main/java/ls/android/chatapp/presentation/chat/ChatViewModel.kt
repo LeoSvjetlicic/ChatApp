@@ -58,7 +58,7 @@ class ChatViewModel @AssistedInject constructor(
 
     fun onSendClick(text: String) {
         viewModelScope.launch {
-            repository.sendMessage(text, connectionId)
+            repository.sendMessage(text.trim(), connectionId)
             isSent = true
             messageText = ""
         }

@@ -118,9 +118,7 @@ fun ChatScreen(
             onInputChanged = { onUserInputChanged(it) },
             onClipClick = { onClipClick() },
             onSendClick = { newMessageText ->
-                if (messageInput.isNotBlank()) {
-                    onSendClick(newMessageText)
-                }
+                onSendClick(newMessageText)
             })
     }
 }
