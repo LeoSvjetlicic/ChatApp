@@ -5,5 +5,6 @@ data class Connection @JvmOverloads constructor(
     val name: String = "",
     val userOne: String? = null,
     val userTwo: String? = null,
-    val created: String = ""
+    val created: String = "",
+    val status: Int
 )

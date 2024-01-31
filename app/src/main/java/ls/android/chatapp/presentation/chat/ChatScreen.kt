@@ -5,11 +5,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,7 +40,8 @@ fun ChatRoute(
         onUserInputChanged = chatViewModel::onUserInputChanged,
         onDoubleClick = chatViewModel::onDoubleClick,
         onClipClick = chatViewModel::onClipClick,
-        onSendClick = chatViewModel::onSendClick
+        onSendClick = chatViewModel::onSendClick,
+        onUpdateConnectionStatus = chatViewModel::onUpdateConnectionStatus
     )
 }
 
@@ -52,7 +55,8 @@ fun ChatScreen(
     setIsSent: (Boolean) -> Unit,
     onDoubleClick: (String, Boolean) -> Unit,
     onClipClick: () -> Unit,
-    onSendClick: (String) -> Unit
+    onSendClick: (String) -> Unit,
+    onUpdateConnectionStatus: (String, Boolean) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
@@ -73,11 +77,16 @@ fun ChatScreen(
                 setIsSent(false)
             }
         }
-
+        DisposableEffect(Unit) {
+            onUpdateConnectionStatus(viewState.connectionId, true)
+            onDispose {
+                onUpdateConnectionStatus(viewState.connectionId, false)
+            }
+        }
         LazyColumn(
             modifier = Modifier
                 .constrainAs(chat) {
-                    top.linkTo(parent.top, margin = 16.dp)
+                    top.linkTo(nameTag.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     bottom.linkTo(bottomBar.top)
@@ -99,10 +108,11 @@ fun ChatScreen(
 
         NameTag(modifier = Modifier
             .constrainAs(nameTag) {
-                top.linkTo(parent.top, margin = 58.dp)
+                top.linkTo(parent.top, margin = 50.dp)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
             }
+            .padding(vertical = 4.dp)
             .width(200.dp), name = viewState.receiver)
 
         BottomBar(

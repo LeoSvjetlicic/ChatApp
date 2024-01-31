@@ -49,7 +49,7 @@ fun ConnectionsScreen(
     connectionScreenState: ConnectionScreenState,
     onItemClick: (String) -> Unit,
     onAddButtonClick: () -> Unit,
-    onShowQRCodeButtonClick: () -> Unit
+    onShowQRCodeButtonClick: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }

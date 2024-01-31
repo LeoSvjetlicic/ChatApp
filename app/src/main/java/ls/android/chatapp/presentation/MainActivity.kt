@@ -76,7 +76,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         onAddButtonClick = { onAddClick() },
                         onShowButtonClick = { onShowQRCodeClick() },
-                        setConnectionViewModel = { connectionsViewModel = it })
+                        setConnectionViewModel = { connectionsViewModel = it }) //TODO
                 }
             }
         }
