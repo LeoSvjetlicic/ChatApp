@@ -8,6 +8,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import ls.android.chatapp.common.Constants
+import ls.android.chatapp.common.ToastHelper
 import ls.android.chatapp.domain.model.Message
 import ls.android.chatapp.domain.repository.MessagesRepository
 import java.time.LocalDateTime
@@ -18,7 +19,7 @@ import javax.inject.Inject
 class MessageRepositoryImpl @Inject constructor(
     private val db: FirebaseFirestore,
     private val auth: FirebaseAuth,
-    private val context: Context
+    private val toastHelper: ToastHelper
 ) : MessagesRepository {
     override suspend fun sendMessage(message: String, connectionId: String) {
         if(message.isNotBlank()){
@@ -30,7 +31,7 @@ class MessageRepositoryImpl @Inject constructor(
         val connectionData = mapOf(
             "text" to message,
             "connectionId" to connectionId,
-            "isLiked" to false,
+            "liked" to false,
             "createdAt" to formattedDateTime,
             "sender" to auth.currentUser!!.email
         )
@@ -38,11 +39,11 @@ class MessageRepositoryImpl @Inject constructor(
         db.collection(Constants.FIREBASE_MESSAGES)
             .add(connectionData)
             .addOnFailureListener { e ->
-                Toast.makeText(context, "An error occurred. Try again.", Toast.LENGTH_SHORT).show()
+                toastHelper.createToast("An error occurred. Try again.", Toast.LENGTH_SHORT)
                 e.printStackTrace()
             }
         }else{
-            Toast.makeText(context,"You can't send an empty message.",Toast.LENGTH_SHORT).show()
+            toastHelper.createToast("You can't send an empty message.", Toast.LENGTH_SHORT)
         }
     }
 

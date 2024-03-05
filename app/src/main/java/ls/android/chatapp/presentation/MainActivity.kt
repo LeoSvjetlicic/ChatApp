@@ -20,13 +20,18 @@ import dagger.hilt.android.AndroidEntryPoint
 import ls.android.chatapp.common.Constants
 import ls.android.chatapp.common.QRCodeGenerator
 import ls.android.chatapp.common.User
+import ls.android.chatapp.data.repository.real.ConnectionRepositoryImpl
 import ls.android.chatapp.presentation.connections.ConnectionsViewModel
 import ls.android.chatapp.presentation.main.MainScreen
 import ls.android.chatapp.presentation.ui.ChatAppTheme
 import java.io.File
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var repository: ConnectionRepositoryImpl
+
     private val qrCodeFilePath = Constants.QR_CODE_VALUE
     private lateinit var storageDir: File
     private lateinit var connectionsViewModel: ConnectionsViewModel
@@ -74,6 +79,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     MainScreen(
                         modifier = Modifier.fillMaxSize(),
+                        repositoryImpl = repository,
                         onAddButtonClick = { onAddClick() },
                         onShowButtonClick = { onShowQRCodeClick() },
                         setConnectionViewModel = { connectionsViewModel = it }) //TODO

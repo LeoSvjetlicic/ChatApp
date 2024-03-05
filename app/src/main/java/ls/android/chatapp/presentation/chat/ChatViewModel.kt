@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ls.android.chatapp.domain.model.Connection
 import ls.android.chatapp.domain.repository.ConnectionRepository
 import ls.android.chatapp.domain.repository.MessagesRepository
 
@@ -26,21 +27,22 @@ class ChatViewModel @AssistedInject constructor(
     private val connectionRepository: ConnectionRepository,
     private val auth: FirebaseAuth
 ) : ViewModel() {
+
     @AssistedFactory
     fun interface ChatViewModelFactory {
-        fun create(connection: String?): ChatViewModel
+        fun create(connectionId: String?): ChatViewModel
     }
 
     var messageText: String by mutableStateOf("")
     var isSent: Boolean by mutableStateOf(false)
-    private val receiverId = connectionId.replace(auth.currentUser!!.email!!, "")
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val messages: Flow<ChatViewState> = repository.getMessages(connectionId).mapLatest {
-        ChatViewState(connectionId, repository.getReceiver(receiverId), it)
+        val connection = connectionRepository.getConnection(connectionId)
+        ChatViewState(connectionId, repository.getReceiver(getReceiverId(connection)), it)
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000L),
+        started = SharingStarted.Eagerly,
         initialValue = ChatViewState()
     )
 
@@ -66,11 +68,9 @@ class ChatViewModel @AssistedInject constructor(
         }
     }
 
-    fun onUpdateConnectionStatus(connectionId: String, increment: Boolean) {
-        viewModelScope.launch {
-            connectionRepository.updateConnections(connectionId, increment)
-        }
-    }
+    private fun getReceiverId(connection: Connection): String =
+        connection.name.replace(auth.currentUser!!.email!!, "")
+
 
     fun onClipClick() {
 //        TODO

@@ -88,7 +88,7 @@ fun ConnectionsScreen(
                         .padding(vertical = 4.dp)
                         .height(50.dp),
                     connection = connection,
-                    onItemClick = { onItemClick(connection.name) })
+                    onItemClick = { onItemClick(connection.id) })
             }
         }
 
