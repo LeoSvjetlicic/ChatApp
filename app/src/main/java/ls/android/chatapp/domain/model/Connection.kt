@@ -1,10 +1,10 @@
 package ls.android.chatapp.domain.model
 
-data class Connection @JvmOverloads constructor(
+data class Connection(
     val id: String = "",
     val name: String = "",
     val userOne: String? = null,
     val userTwo: String? = null,
     val created: String = "",
-    val status: Int
+    val status: Int = 0
 )

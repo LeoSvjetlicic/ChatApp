@@ -91,7 +91,7 @@ fun ConnectionItem(
 }
 
 fun getReceiver(receiverId: String): String {
-    val parts = receiverId.replace(User.name,"").split(".", "@").map { string ->
+    val parts = receiverId.replace(User.name, "").split(".", "@").map { string ->
         string.replaceFirstChar {
             if (it.isLowerCase()) it.titlecase(
                 Locale.ROOT

@@ -31,7 +31,9 @@ fun WarningMessage(
     onYesClick: () -> Unit,
     onNoClick: () -> Unit
 ) {
-    Box(modifier = modifier.fillMaxSize().background(DarkGray_p70)) {
+    Box(modifier = modifier
+        .fillMaxSize()
+        .background(DarkGray_p70)) {
         Card(
             modifier = Modifier
                 .wrapContentHeight()

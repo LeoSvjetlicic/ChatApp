@@ -28,6 +28,7 @@ import ls.android.chatapp.presentation.chat.components.NameTag
 @Composable
 fun ChatRoute(
     chatViewModel: ChatViewModel,
+    onVisibilityChanged: (String, Boolean) -> Unit
 ) {
     val messages: ChatViewState by chatViewModel.messages.collectAsState(ChatViewState())
 
@@ -41,7 +42,7 @@ fun ChatRoute(
         onDoubleClick = chatViewModel::onDoubleClick,
         onClipClick = chatViewModel::onClipClick,
         onSendClick = chatViewModel::onSendClick,
-        onUpdateConnectionStatus = chatViewModel::onUpdateConnectionStatus
+        onUpdateConnectionStatus = onVisibilityChanged
     )
 }
 
@@ -60,7 +61,19 @@ fun ChatScreen(
 ) {
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
+    LaunchedEffect(viewState.connectionId) {
+        if (viewState.connectionId.isNotBlank()) {
+            onUpdateConnectionStatus(viewState.connectionId, true)
+        }
+    }
 
+    DisposableEffect(viewState.connectionId) {
+        onDispose {
+            if (viewState.connectionId.isNotBlank()) {
+                onUpdateConnectionStatus(viewState.connectionId, false)
+            }
+        }
+    }
     ConstraintLayout(
         modifier = modifier
             .fillMaxSize()
@@ -75,12 +88,6 @@ fun ChatScreen(
             if (isSent) {
                 lazyListState.scrollToItem(0)
                 setIsSent(false)
-            }
-        }
-        DisposableEffect(Unit) {
-            onUpdateConnectionStatus(viewState.connectionId, true)
-            onDispose {
-                onUpdateConnectionStatus(viewState.connectionId, false)
             }
         }
         LazyColumn(
@@ -113,7 +120,9 @@ fun ChatScreen(
                 end.linkTo(parent.end)
             }
             .padding(vertical = 4.dp)
-            .width(200.dp), name = viewState.receiver)
+            .width(200.dp),
+            name = viewState.receiver
+        )
 
         BottomBar(
             modifier = Modifier

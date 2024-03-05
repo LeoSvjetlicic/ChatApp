@@ -9,9 +9,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,7 +24,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import ls.android.chatapp.common.Constants
+import ls.android.chatapp.data.repository.real.ConnectionRepositoryImpl
 import ls.android.chatapp.presentation.chat.ChatRoute
 import ls.android.chatapp.presentation.chat.ChatViewModel
 import ls.android.chatapp.presentation.common.components.TopBar
@@ -36,10 +42,28 @@ import ls.android.chatapp.presentation.registration_login.RegistrationLoginRoute
 @Composable
 fun MainScreen(
     modifier: Modifier,
+    repositoryImpl: ConnectionRepositoryImpl,
     onAddButtonClick: () -> Unit,
     onShowButtonClick: () -> Unit,
     setConnectionViewModel: (ConnectionsViewModel) -> Unit
 ) {
+    var isChatVisible by remember {
+        mutableStateOf(false)
+    }
+    var id by remember {
+        mutableStateOf("")
+    }
+    LaunchedEffect(isChatVisible) {
+        withContext(Dispatchers.Main) {
+            if (id.isNotBlank()) {
+                if (isChatVisible) {
+                    repositoryImpl.updateConnections(id, true)
+                } else {
+                    repositoryImpl.updateConnections(id, false)
+                }
+            }
+        }
+    }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val showTopBar by remember {
@@ -112,7 +136,10 @@ fun MainScreen(
                         hiltViewModel<ChatViewModel, ChatViewModel.ChatViewModelFactory> { factory: ChatViewModel.ChatViewModelFactory ->
                             factory.create(connectionId)
                         }
-                    ChatRoute(chatViewModel = chatViewModel)
+                    ChatRoute(chatViewModel = chatViewModel) { clickedId, isVisible ->
+                        isChatVisible = isVisible
+                        id = clickedId
+                    }
                 }
             }
         }
