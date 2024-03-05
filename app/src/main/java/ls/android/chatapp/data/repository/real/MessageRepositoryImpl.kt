@@ -1,6 +1,5 @@
 package ls.android.chatapp.data.repository.real
 
-import android.content.Context
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -22,27 +21,27 @@ class MessageRepositoryImpl @Inject constructor(
     private val toastHelper: ToastHelper
 ) : MessagesRepository {
     override suspend fun sendMessage(message: String, connectionId: String) {
-        if(message.isNotBlank()){
-        val currentDateTime = LocalDateTime.now()
-        val formatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val formattedDateTime = currentDateTime.format(formatter)
+        if (message.isNotBlank()) {
+            val currentDateTime = LocalDateTime.now()
+            val formatter =
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val formattedDateTime = currentDateTime.format(formatter)
 
-        val connectionData = mapOf(
-            "text" to message,
-            "connectionId" to connectionId,
-            "liked" to false,
-            "createdAt" to formattedDateTime,
-            "sender" to auth.currentUser!!.email
-        )
+            val connectionData = mapOf(
+                "text" to message,
+                "connectionId" to connectionId,
+                "liked" to false,
+                "createdAt" to formattedDateTime,
+                "sender" to auth.currentUser!!.email
+            )
 
-        db.collection(Constants.FIREBASE_MESSAGES)
-            .add(connectionData)
-            .addOnFailureListener { e ->
-                toastHelper.createToast("An error occurred. Try again.", Toast.LENGTH_SHORT)
-                e.printStackTrace()
-            }
-        }else{
+            db.collection(Constants.FIREBASE_MESSAGES)
+                .add(connectionData)
+                .addOnFailureListener { e ->
+                    toastHelper.createToast("An error occurred. Try again.", Toast.LENGTH_SHORT)
+                    e.printStackTrace()
+                }
+        } else {
             toastHelper.createToast("You can't send an empty message.", Toast.LENGTH_SHORT)
         }
     }

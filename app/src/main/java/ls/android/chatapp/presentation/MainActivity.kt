@@ -13,6 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
@@ -136,5 +138,12 @@ class MainActivity : ComponentActivity() {
             mutableListOf(
                 Manifest.permission.CAMERA,
             ).toTypedArray()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        User.id = ""
+        User.name = ""
+        Firebase.auth.signOut()
     }
 }

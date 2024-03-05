@@ -19,9 +19,11 @@ fun TopBar(
             .fillMaxWidth()
             .background(IceBlue)
     ) {
-        BackButton(modifier = Modifier
-            .fillMaxHeight()
-            .align(Alignment.CenterStart)) {
+        BackButton(
+            modifier = Modifier
+                .fillMaxHeight()
+                .align(Alignment.CenterStart)
+        ) {
             onBackClick()
         }
     }

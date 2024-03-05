@@ -4,7 +4,6 @@ import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -59,7 +58,7 @@ class ConnectionRepositoryImpl @Inject constructor(
         scannedEmail: String,
         usedConnections: List<Connection>
     ) {
-        if (usedConnections.any { connectionExists(scannedEmail, usedConnections) }) {
+        if (usedConnections.any { !connectionExists(scannedEmail, usedConnections) }) {
             val currentUserEmail = auth.currentUser?.email!!
             val currentDateTime = LocalDateTime.now()
             val formatter =
@@ -137,19 +136,15 @@ class ConnectionRepositoryImpl @Inject constructor(
     ) {
         try {
             if (!increment) {
+                val newStatus = currentStatus - 1
+                val fieldUpdates = mapOf(
+                    "status" to newStatus
+                )
+                connectionRef.update(fieldUpdates)
                 if (currentStatus == 1) {
-                    val newStatus = 0
-                    val fieldUpdates = mapOf(
-                        "status" to newStatus
-                    )
-                    connectionRef.update(fieldUpdates)
                     val query = db.collection(Constants.FIREBASE_MESSAGES)
                         .whereEqualTo("connectionId", connectionId)
                     val iLoveATLA = query.get().await()
-                    Log.d("saidugfsd", connectionId)
-                    Log.d("saidugfsd", connectionRef.toString())
-                    Log.d("saidugfsd", query.toString())
-                    Log.d("saidugfsd", iLoveATLA.toString())
                     for (document in iLoveATLA) {
                         db.collection(Constants.FIREBASE_MESSAGES)
                             .document(document.id)
@@ -161,7 +156,6 @@ class ConnectionRepositoryImpl @Inject constructor(
                                 println("Error deleting document $document: $e")
                             }
                     }
-                    toastHelper.createToast("Messages successfully deleted", Toast.LENGTH_SHORT)
                 }
             } else {
                 val newStatus = currentStatus + 1
