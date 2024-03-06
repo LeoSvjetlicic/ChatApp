@@ -10,6 +10,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import ls.android.chatapp.common.GyroscopeHelper
 import ls.android.chatapp.common.ToastHelper
 import ls.android.chatapp.data.repository.real.AuthenticationRepositoryImpl
 import ls.android.chatapp.data.repository.real.ConnectionRepositoryImpl
@@ -62,4 +63,10 @@ object AppModule {
         @ApplicationContext context: Context
     ): ToastHelper =
         ToastHelper(context)
+
+    @Provides
+    fun provideAndroidGyroscope(
+        @ApplicationContext context: Context
+    ): GyroscopeHelper =
+        GyroscopeHelper(context)
 }

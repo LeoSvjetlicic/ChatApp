@@ -1,4 +1,4 @@
-package ls.android.chatapp.presentation.common.components
+package ls.android.chatapp.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

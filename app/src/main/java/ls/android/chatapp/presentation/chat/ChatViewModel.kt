@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ls.android.chatapp.common.GyroscopeHelper
 import ls.android.chatapp.domain.model.Connection
 import ls.android.chatapp.domain.repository.ConnectionRepository
 import ls.android.chatapp.domain.repository.MessagesRepository
@@ -25,6 +26,7 @@ class ChatViewModel @AssistedInject constructor(
     @Assisted val connectionId: String,
     private val repository: MessagesRepository,
     private val connectionRepository: ConnectionRepository,
+    val gyroscope:GyroscopeHelper,
     private val auth: FirebaseAuth
 ) : ViewModel() {
 
@@ -70,9 +72,4 @@ class ChatViewModel @AssistedInject constructor(
 
     private fun getReceiverId(connection: Connection): String =
         connection.name.replace(auth.currentUser!!.email!!, "")
-
-
-    fun onClipClick() {
-//        TODO
-    }
 }

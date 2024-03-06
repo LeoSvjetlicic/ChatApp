@@ -23,7 +23,7 @@ fun BottomBar(
     modifier: Modifier,
     userInput: String,
     onInputChanged: (String) -> Unit,
-    onClipClick: () -> Unit,
+    onPrivateClick: () -> Unit,
     onSendClick: (String) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -43,10 +43,9 @@ fun BottomBar(
                     bottom.linkTo(parent.bottom, margin = 16.dp)
                     start.linkTo(parent.start, margin = 16.dp)
                 },
-            imageId = R.drawable.ic_clip
+            imageId = R.drawable.ic_incognito,
         ) {
-            // todo maybe a camera instead
-//            onClipClick()
+            onPrivateClick()
         }
 
         BasicTextField(

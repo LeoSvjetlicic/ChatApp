@@ -12,10 +12,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -30,7 +33,7 @@ import ls.android.chatapp.common.Constants
 import ls.android.chatapp.data.repository.real.ConnectionRepositoryImpl
 import ls.android.chatapp.presentation.chat.ChatRoute
 import ls.android.chatapp.presentation.chat.ChatViewModel
-import ls.android.chatapp.presentation.common.components.TopBar
+import ls.android.chatapp.presentation.components.TopBar
 import ls.android.chatapp.presentation.connections.ConnectionRoute
 import ls.android.chatapp.presentation.connections.ConnectionsViewModel
 import ls.android.chatapp.presentation.navigation.ChatRoute
@@ -45,7 +48,6 @@ fun MainScreen(
     repositoryImpl: ConnectionRepositoryImpl,
     onAddButtonClick: () -> Unit,
     onShowButtonClick: () -> Unit,
-    setConnectionViewModel: (ConnectionsViewModel) -> Unit
 ) {
     var isChatVisible by remember {
         mutableStateOf(false)
@@ -53,6 +55,13 @@ fun MainScreen(
     var id by remember {
         mutableStateOf("")
     }
+    var maxX by remember {
+        mutableFloatStateOf(0f)
+    }
+    var maxY by remember {
+        mutableFloatStateOf(0f)
+    }
+    val density = LocalDensity.current.density
     LaunchedEffect(isChatVisible) {
         withContext(Dispatchers.Main) {
             if (id.isNotBlank()) {
@@ -87,7 +96,12 @@ fun MainScreen(
             }
         }
     ) {
-        Surface(modifier = Modifier.fillMaxSize()) {
+        Surface(modifier = Modifier
+            .fillMaxSize()
+            .onGloballyPositioned {
+                maxX = it.size.width / density
+                maxY = it.size.height / density
+            }) {
             NavHost(
                 navController = navController,
                 startDestination = Constants.REGISTRATION_LOGIN_ROUTE,
@@ -109,7 +123,6 @@ fun MainScreen(
 
                 composable(Constants.CONNECTIONS_ROUTE) {
                     val viewModel = hiltViewModel<ConnectionsViewModel>()
-                    setConnectionViewModel(viewModel)
                     ConnectionRoute(
                         modifier = Modifier.padding(16.dp),
                         viewModel = viewModel,
@@ -136,7 +149,12 @@ fun MainScreen(
                         hiltViewModel<ChatViewModel, ChatViewModel.ChatViewModelFactory> { factory: ChatViewModel.ChatViewModelFactory ->
                             factory.create(connectionId)
                         }
-                    ChatRoute(chatViewModel = chatViewModel) { clickedId, isVisible ->
+
+                    ChatRoute(
+                        chatViewModel = chatViewModel,
+                        maxXInitial = maxX,
+                        maxYInitial = maxY
+                    ) { clickedId, isVisible ->
                         isChatVisible = isVisible
                         id = clickedId
                     }

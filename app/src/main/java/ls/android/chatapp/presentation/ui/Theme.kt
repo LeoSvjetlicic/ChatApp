@@ -14,7 +14,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import hr.carnet.chatap.presentation.theme.ui.Typography
 
 private val DarkColorScheme = darkColorScheme(
     primary = IceBlue,

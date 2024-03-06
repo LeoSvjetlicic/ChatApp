@@ -2,7 +2,6 @@ package ls.android.chatapp.presentation.registration_login
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,28 +47,27 @@ fun RegistrationLoginScreen(
     val focusManager = LocalFocusManager.current
     val interactionSource = remember { MutableInteractionSource() }
 
-    Column(
+    Row(
         modifier = modifier
             .clickable(interactionSource = interactionSource, indication = null) {
                 focusManager.clearFocus()
             }
             .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            modifier = Modifier.padding(top = 60.dp),
-            text = if (screenState.isLogin) {
-                "Registration"
-            } else {
-                "Login"
-            },
-            fontWeight = FontWeight.Bold,
-            fontSize = 30.sp
-        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Text(
+                modifier = Modifier.padding(bottom = 80.dp),
+                text = if (screenState.isLogin) {
+                    "Registration"
+                } else {
+                    "Login"
+                },
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp
+            )
             InputText(
                 modifier = Modifier,
                 value = screenState.email,
