@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ls.android.chatapp.R
-import ls.android.chatapp.presentation.common.components.ActionButton
+import ls.android.chatapp.presentation.components.ActionButton
 import ls.android.chatapp.presentation.connections.components.ConnectionItem
 
 @Composable
