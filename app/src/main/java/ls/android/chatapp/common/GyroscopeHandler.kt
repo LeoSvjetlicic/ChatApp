@@ -67,11 +67,26 @@ class GyroscopeHelper(context: Context) {
                     0f
                 }
             }
-            return Offset(calculateOffset(sumX, maxXValue), calculateOffset(sumY, maxYValue))
+
+            // TODO not tested - should work
+            return Offset(calculateXOffset(sumX, maxXValue), calculateYOffset(sumY, maxYValue))
         }
 
-        private fun calculateOffset(offset: Float, max: Float): Float {
-            val newMax = max - (BOTTOM_BAR_HEIGHT)
+        private fun calculateXOffset(offset: Float, max: Float): Float {
+            val ret = if (offset <= 0f) {
+                0f
+            } else {
+                if (offset >= max) {
+                    max
+                } else {
+                    offset
+                }
+            }
+            return ret
+        }
+
+        private fun calculateYOffset(offset: Float, max: Float): Float {
+            val newMax = max - (BOTTOM_BAR_HEIGHT + 1)
             val ret = if (offset <= 50f) {
                 50f
             } else {

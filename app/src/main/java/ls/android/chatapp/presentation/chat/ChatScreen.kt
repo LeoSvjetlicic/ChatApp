@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -25,7 +26,6 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -100,6 +100,7 @@ fun ChatScreen(
     var offset by remember {
         mutableStateOf(Offset(maxX / 2, maxY / 2))
     }
+    val backgroundColor = MaterialTheme.colorScheme.background
 
     LaunchedEffect(viewState.connectionId) {
         if (viewState.connectionId.isNotBlank()) {
@@ -188,7 +189,8 @@ fun ChatScreen(
                         Brush.radialGradient(
                             listOf(
                                 Color.Transparent,
-                                White
+                                Color.Transparent,
+                                backgroundColor
                             ),
                             center = Offset(
                                 (offset.x).dp.toPx(),
