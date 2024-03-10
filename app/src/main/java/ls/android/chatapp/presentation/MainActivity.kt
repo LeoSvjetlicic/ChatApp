@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
@@ -79,7 +80,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     MainScreen(
                         modifier = Modifier.fillMaxSize(),
-                        repositoryImpl = repository,
+                        viewModel = hiltViewModel(),
                         onAddButtonClick = { onAddClick() },
                         onShowButtonClick = { onShowQRCodeClick() },
                         setConnectionViewModel = { connectionsViewModel = it })

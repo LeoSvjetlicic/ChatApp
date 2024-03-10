@@ -9,7 +9,6 @@ import androidx.compose.ui.geometry.Offset
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import ls.android.chatapp.presentation.chat.BOTTOM_BAR_HEIGHT
 
 private val deltaRotationVectorRaw = FloatArray(3) { 0f }
 
@@ -68,7 +67,6 @@ class GyroscopeHelper(context: Context) {
                 }
             }
 
-            // TODO not tested - should work
             return Offset(calculateXOffset(sumX, maxXValue), calculateYOffset(sumY, maxYValue))
         }
 
@@ -86,9 +84,9 @@ class GyroscopeHelper(context: Context) {
         }
 
         private fun calculateYOffset(offset: Float, max: Float): Float {
-            val newMax = max - (BOTTOM_BAR_HEIGHT + 1)
-            val ret = if (offset <= 50f) {
-                50f
+            val newMax = max - (25f + 1)
+            val ret = if (offset <= 25f) {
+                25f
             } else {
                 if (offset >= newMax) {
                     newMax

@@ -1,6 +1,7 @@
 package ls.android.chatapp.presentation.main
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -27,10 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import ls.android.chatapp.common.Constants
-import ls.android.chatapp.data.repository.real.ConnectionRepositoryImpl
 import ls.android.chatapp.presentation.chat.ChatRoute
 import ls.android.chatapp.presentation.chat.ChatViewModel
 import ls.android.chatapp.presentation.components.TopBar
@@ -45,34 +42,18 @@ import ls.android.chatapp.presentation.registration_login.RegistrationLoginRoute
 @Composable
 fun MainScreen(
     modifier: Modifier,
-    repositoryImpl: ConnectionRepositoryImpl,
+    viewModel: MainViewModel,
     onAddButtonClick: () -> Unit,
     onShowButtonClick: () -> Unit,
     setConnectionViewModel: (ConnectionsViewModel) -> Unit
 ) {
-    var isChatVisible by remember {
-        mutableStateOf(false)
-    }
     var id by remember {
         mutableStateOf("")
     }
-    var maxX by remember {
-        mutableFloatStateOf(0f)
-    }
-    var maxY by remember {
-        mutableFloatStateOf(0f)
-    }
     val density = LocalDensity.current.density
-    LaunchedEffect(isChatVisible) {
-        withContext(Dispatchers.Main) {
-            if (id.isNotBlank()) {
-                if (isChatVisible) {
-                    repositoryImpl.updateConnections(id, true)
-                } else {
-                    repositoryImpl.updateConnections(id, false)
-                }
-            }
-        }
+    LaunchedEffect(viewModel.isChatVisible.value) {
+        Log.d("dvhsbdfuvj","changed")
+        viewModel.updateConnections(id)
     }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -100,8 +81,8 @@ fun MainScreen(
         Surface(modifier = Modifier
             .fillMaxSize()
             .onGloballyPositioned {
-                maxX = it.size.width / density
-                maxY = it.size.height / density
+                viewModel.maxX.floatValue = it.size.width / density
+                viewModel.maxY.floatValue = it.size.height / density
             }) {
             NavHost(
                 navController = navController,
@@ -123,11 +104,11 @@ fun MainScreen(
                 }
 
                 composable(Constants.CONNECTIONS_ROUTE) {
-                    val viewModel = hiltViewModel<ConnectionsViewModel>()
-                    setConnectionViewModel(viewModel)
+                    val connectionViewModel = hiltViewModel<ConnectionsViewModel>()
+                    setConnectionViewModel(connectionViewModel)
                     ConnectionRoute(
                         modifier = Modifier.padding(16.dp),
-                        viewModel = viewModel,
+                        viewModel = connectionViewModel,
                         onItemClick = {
                             navController.navigate(ChatRoute.createNavigationRoute(it))
                         },
@@ -154,10 +135,10 @@ fun MainScreen(
 
                     ChatRoute(
                         chatViewModel = chatViewModel,
-                        maxXInitial = maxX,
-                        maxYInitial = maxY
+                        maxXInitial = viewModel.maxX.floatValue,
+                        maxYInitial = viewModel.maxY.floatValue
                     ) { clickedId, isVisible ->
-                        isChatVisible = isVisible
+                        viewModel.isChatVisible.value = isVisible
                         id = clickedId
                     }
                 }

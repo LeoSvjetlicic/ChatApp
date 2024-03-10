@@ -33,7 +33,7 @@ class RegistrationLoginViewModel @Inject constructor(
 
     fun onContinueClick(navigate: () -> Unit) {
         viewModelScope.launch {
-            if (!screenState.value.isLogin) {
+            if (screenState.value.isLogin) {
                 authenticationRepository.loginUser(
                     screenState.value.email,
                     screenState.value.password,

@@ -2,10 +2,14 @@ package ls.android.chatapp.presentation.registration_login
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -57,63 +61,72 @@ fun RegistrationLoginScreen(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                modifier = Modifier.padding(bottom = 80.dp),
-                text = if (screenState.isLogin) {
-                    "Registration"
-                } else {
-                    "Login"
-                },
-                fontWeight = FontWeight.Bold,
-                fontSize = 30.sp
-            )
-            InputText(
-                modifier = Modifier,
-                value = screenState.email,
-                hint = "Email",
-                isPassword = false,
-                onValueChanged = onEmailChanged
-            )
-            InputText(
-                modifier = Modifier.padding(top = 20.dp),
-                value = screenState.password,
-                hint = "Password",
-                isPassword = true,
-                onValueChanged = onPasswordChanged
-            )
-            Button(
-                modifier = Modifier.padding(top = 30.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = DarkBlue,
-                    contentColor = IceBlue
-                ),
-                onClick = { onButtonClick() }
+            Spacer(modifier = Modifier.width(1.dp))
+            Column(
+                modifier = Modifier.wrapContentHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(text = "Continue", fontFamily = exoTypography)
+                Text(
+                    modifier = Modifier.padding(bottom = 80.dp),
+                    text = if (!screenState.isLogin) {
+                        "Registration"
+                    } else {
+                        "Login"
+                    },
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 30.sp
+                )
+                InputText(
+                    modifier = Modifier,
+                    value = screenState.email,
+                    hint = "Email",
+                    isPassword = false,
+                    onValueChanged = onEmailChanged
+                )
+                InputText(
+                    modifier = Modifier.padding(top = 20.dp),
+                    value = screenState.password,
+                    hint = "Password",
+                    isPassword = true,
+                    onValueChanged = onPasswordChanged
+                )
+                Button(
+                    modifier = Modifier.padding(top = 30.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = DarkBlue,
+                        contentColor = IceBlue
+                    ),
+                    onClick = { onButtonClick() }
+                ) {
+                    Text(text = "Continue", fontFamily = exoTypography)
+                }
             }
-        }
-        Row(
-            modifier = Modifier
-                .padding(bottom = 20.dp)
-        ) {
-            Text(
-                text = if (screenState.isLogin) {
-                    "Already have an account?"
-                } else {
-                    "Don't have an account?"
-                },
-                fontSize = 11.sp
-            )
-            Text(
+            Row(
                 modifier = Modifier
-                    .padding(start = 8.dp)
-                    .clickable { onTextClick() },
-                text = "Click here",
-                color = DarkBlue,
-                fontSize = 11.sp
-            )
+                    .padding(bottom = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if (!screenState.isLogin) {
+                        "Already have an account?"
+                    } else {
+                        "Don't have an account?"
+                    },
+                    fontSize = 11.sp
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .clickable { onTextClick() },
+                    text = "Click here",
+                    color = DarkBlue,
+                    fontSize = 11.sp
+                )
+            }
         }
     }
 }
