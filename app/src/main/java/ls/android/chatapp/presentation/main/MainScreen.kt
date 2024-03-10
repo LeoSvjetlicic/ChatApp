@@ -48,6 +48,7 @@ fun MainScreen(
     repositoryImpl: ConnectionRepositoryImpl,
     onAddButtonClick: () -> Unit,
     onShowButtonClick: () -> Unit,
+    setConnectionViewModel: (ConnectionsViewModel) -> Unit
 ) {
     var isChatVisible by remember {
         mutableStateOf(false)
@@ -123,6 +124,7 @@ fun MainScreen(
 
                 composable(Constants.CONNECTIONS_ROUTE) {
                     val viewModel = hiltViewModel<ConnectionsViewModel>()
+                    setConnectionViewModel(viewModel)
                     ConnectionRoute(
                         modifier = Modifier.padding(16.dp),
                         viewModel = viewModel,

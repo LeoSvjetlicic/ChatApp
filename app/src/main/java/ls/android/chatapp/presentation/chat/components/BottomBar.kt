@@ -5,8 +5,10 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
@@ -17,6 +19,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ls.android.chatapp.R
 import ls.android.chatapp.presentation.components.ActionButton
+import ls.android.chatapp.presentation.ui.IceBlue
+import ls.android.chatapp.presentation.ui.LocalCustomColorsPalette
 
 @Composable
 fun BottomBar(
@@ -64,10 +68,13 @@ fun BottomBar(
                 },
             singleLine = false,
             textStyle = TextStyle(
-                color = Color.Gray,
+                color = LocalCustomColorsPalette.current.textColor,
                 fontSize = 14.sp,
             ),
             value = userInput,
+            cursorBrush = Brush.linearGradient(
+                listOf(IceBlue,IceBlue)
+            ),
             onValueChange = { onInputChanged(it) }
         )
 

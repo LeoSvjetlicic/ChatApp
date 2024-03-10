@@ -16,6 +16,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ls.android.chatapp.presentation.ui.IceBlue
+import ls.android.chatapp.presentation.ui.LocalCustomColorsPalette
+import ls.android.chatapp.presentation.ui.exoTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +39,8 @@ fun InputText(
         placeholder = { Text(text = hint) },
         singleLine = true,
         textStyle = TextStyle(
-            fontSize = 16.sp
+            fontSize = 16.sp,
+            fontFamily = exoTypography
         ),
         shape = RoundedCornerShape(10.dp),
         visualTransformation = if (isPassword) {
@@ -46,7 +49,7 @@ fun InputText(
             VisualTransformation.None
         },
         colors = TextFieldDefaults.textFieldColors(
-            textColor = Color.Black,
+            textColor = LocalCustomColorsPalette.current.textColor,
             disabledTextColor = Color.Transparent,
             focusedIndicatorColor = IceBlue,
             unfocusedIndicatorColor = IceBlue,

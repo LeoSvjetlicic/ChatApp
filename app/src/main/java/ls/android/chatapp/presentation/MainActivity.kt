@@ -84,7 +84,7 @@ class MainActivity : ComponentActivity() {
                         repositoryImpl = repository,
                         onAddButtonClick = { onAddClick() },
                         onShowButtonClick = { onShowQRCodeClick() },
-                        setConnectionViewModel = { connectionsViewModel = it }) //TODO
+                        setConnectionViewModel = { connectionsViewModel = it })
                 }
             }
         }

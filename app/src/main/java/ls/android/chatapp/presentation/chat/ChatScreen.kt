@@ -1,5 +1,6 @@
 package ls.android.chatapp.presentation.chat
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import ls.android.chatapp.common.GyroscopeHelper
 import ls.android.chatapp.presentation.chat.components.BottomBar
 import ls.android.chatapp.presentation.chat.components.MessageItem
 import ls.android.chatapp.presentation.chat.components.NameTag
+import ls.android.chatapp.presentation.ui.LocalCustomColorsPalette
 
 const val BOTTOM_BAR_HEIGHT = 55
 
@@ -100,8 +102,8 @@ fun ChatScreen(
     var offset by remember {
         mutableStateOf(Offset(maxX / 2, maxY / 2))
     }
+    val outlineColor = LocalCustomColorsPalette.current.privateModeOutline
     val backgroundColor = MaterialTheme.colorScheme.background
-
     LaunchedEffect(viewState.connectionId) {
         if (viewState.connectionId.isNotBlank()) {
             onUpdateConnectionStatus(viewState.connectionId, true)
@@ -190,11 +192,13 @@ fun ChatScreen(
                             listOf(
                                 Color.Transparent,
                                 Color.Transparent,
+                                outlineColor,
+                                backgroundColor,
                                 backgroundColor
                             ),
                             center = Offset(
-                                (offset.x).dp.toPx(),
-                                (offset.y).dp.toPx()
+                                offset.x.dp.toPx(),
+                                offset.y.dp.toPx()
                             ),
                             radius = 100.dp.toPx(),
                         )

@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import ls.android.chatapp.presentation.registration_login.components.InputText
 import ls.android.chatapp.presentation.ui.DarkBlue
 import ls.android.chatapp.presentation.ui.IceBlue
+import ls.android.chatapp.presentation.ui.exoTypography
 
 @Composable
 fun RegistrationLoginRoute(viewModel: RegistrationLoginViewModel, onButtonClick: () -> Unit) {
@@ -90,7 +91,7 @@ fun RegistrationLoginScreen(
                 ),
                 onClick = { onButtonClick() }
             ) {
-                Text(text = "Continue")
+                Text(text = "Continue", fontFamily = exoTypography)
             }
         }
         Row(
