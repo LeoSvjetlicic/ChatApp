@@ -93,7 +93,7 @@ fun MainScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
-                ) { navController.popBackStack() }
+                ) { navController.navigateUp() }
             }
         }
     ) {

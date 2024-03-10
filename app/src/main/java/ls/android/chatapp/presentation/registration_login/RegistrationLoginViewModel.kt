@@ -12,13 +12,13 @@ import javax.inject.Inject
 @HiltViewModel
 class RegistrationLoginViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
-    private val firebaseAuth: FirebaseAuth
+    firebaseAuth: FirebaseAuth
 ) : ViewModel() {
     init {
         firebaseAuth.signOut()
     }
 
-    val screenState = mutableStateOf(RegistrationLoginScreenState("", "", false))
+    val screenState = mutableStateOf(RegistrationLoginScreenState())
     fun onEmailChange(value: String) {
         screenState.value = screenState.value.copy(email = value)
     }
