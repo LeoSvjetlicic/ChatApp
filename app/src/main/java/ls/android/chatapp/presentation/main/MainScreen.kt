@@ -1,7 +1,6 @@
 package ls.android.chatapp.presentation.main
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,7 +26,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import ls.android.chatapp.common.Constants
+import ls.android.chatapp.common.User
 import ls.android.chatapp.presentation.chat.ChatRoute
 import ls.android.chatapp.presentation.chat.ChatViewModel
 import ls.android.chatapp.presentation.components.TopBar
@@ -52,7 +54,6 @@ fun MainScreen(
     }
     val density = LocalDensity.current.density
     LaunchedEffect(viewModel.isChatVisible.value) {
-        Log.d("dvhsbdfuvj","changed")
         viewModel.updateConnections(id)
     }
     val navController = rememberNavController()
@@ -113,6 +114,13 @@ fun MainScreen(
                             navController.navigate(ChatRoute.createNavigationRoute(it))
                         },
                         onAddButtonClick = { onAddButtonClick() },
+                        onDropDownElementClick = {
+//                          returns String in case of adding new settings elements
+                            navController.navigateUp()
+                            Firebase.auth.signOut()
+                            User.id = ""
+                            User.name = ""
+                        },
                         onShowQRCodeButtonClick = {
                             onShowButtonClick()
                             navController.navigate(Constants.QR_CODE_ROUTE)

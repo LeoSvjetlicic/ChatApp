@@ -3,8 +3,9 @@ package ls.android.chatapp.presentation.registration_login
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ls.android.chatapp.domain.repository.AuthenticationRepository
 import javax.inject.Inject
@@ -12,12 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class RegistrationLoginViewModel @Inject constructor(
     private val authenticationRepository: AuthenticationRepository,
-    firebaseAuth: FirebaseAuth
 ) : ViewModel() {
-    init {
-        firebaseAuth.signOut()
-    }
-
     val screenState = mutableStateOf(RegistrationLoginScreenState())
     fun onEmailChange(value: String) {
         screenState.value = screenState.value.copy(email = value)
@@ -33,18 +29,24 @@ class RegistrationLoginViewModel @Inject constructor(
 
     fun onContinueClick(navigate: () -> Unit) {
         viewModelScope.launch {
-            if (screenState.value.isLogin) {
-                authenticationRepository.loginUser(
-                    screenState.value.email,
-                    screenState.value.password,
-                    navigate = navigate
-                )
-            } else {
-                authenticationRepository.registerUser(
-                    screenState.value.email,
-                    screenState.value.password,
-                    navigate = navigate
-                )
+            async {
+                if (screenState.value.isLogin) {
+                    authenticationRepository.loginUser(
+                        screenState.value.email,
+                        screenState.value.password,
+                        navigate = navigate
+                    )
+                } else {
+                    authenticationRepository.registerUser(
+                        screenState.value.email,
+                        screenState.value.password,
+                        navigate = navigate
+                    )
+                }
+                delay(200)
+            }.invokeOnCompletion {
+                screenState.value =
+                    screenState.value.copy(email = "", password = "", isLogin = false)
             }
         }
     }
