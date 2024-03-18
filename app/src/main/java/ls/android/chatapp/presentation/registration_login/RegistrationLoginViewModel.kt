@@ -43,10 +43,10 @@ class RegistrationLoginViewModel @Inject constructor(
                         navigate = navigate
                     )
                 }
-                delay(200)
+                delay(500)
             }.invokeOnCompletion {
                 screenState.value =
-                    screenState.value.copy(email = "", password = "", isLogin = false)
+                    screenState.value.copy(email = "", password = "", isLogin = true)
             }
         }
     }

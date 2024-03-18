@@ -15,9 +15,13 @@ import ls.android.chatapp.common.ToastHelper
 import ls.android.chatapp.data.repository.real.AuthenticationRepositoryImpl
 import ls.android.chatapp.data.repository.real.ConnectionRepositoryImpl
 import ls.android.chatapp.data.repository.real.MessageRepositoryImpl
+import ls.android.chatapp.data.service.FcmApi
 import ls.android.chatapp.domain.repository.AuthenticationRepository
 import ls.android.chatapp.domain.repository.ConnectionRepository
 import ls.android.chatapp.domain.repository.MessagesRepository
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -69,4 +73,12 @@ object AppModule {
         @ApplicationContext context: Context
     ): GyroscopeHelper =
         GyroscopeHelper(context)
+
+    @Provides
+    fun provideApi(): FcmApi =
+        Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:8080/")
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create()
 }

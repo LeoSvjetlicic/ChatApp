@@ -107,6 +107,55 @@ class ConnectionRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateConnectionMessageToken(token: String) {
+        val email = auth.currentUser?.email!!
+        if (token.isNotBlank()) {
+            try {
+                val query = db.collection(Constants.FIREBASE_TOKEN)
+                    .whereEqualTo("email", email)
+                val querySnapshot = query.get().await()
+
+                if (!querySnapshot.isEmpty) { // If document exists
+                    val documentSnapshot = querySnapshot.documents[0]
+                    documentSnapshot.reference.update("token", token).await()
+                } else {
+                    db.collection(Constants.FIREBASE_TOKEN)
+                        .document()
+                        .set(mapOf("email" to email, "token" to token))
+                        .await()
+                }
+            } catch (e: Exception) {
+                Log.d("mojError", "An error occurred: $e")
+            }
+        } else {
+            Log.d("mojError", "Email or token is empty")
+        }
+    }
+
+    override suspend fun getConnectionMessageToken(email: String): String? {
+        if (email.isNotBlank()) {
+            try {
+                val query = db.collection(Constants.FIREBASE_TOKEN)
+                    .whereEqualTo("email", email)
+                val querySnapshot = query.get().await()
+
+                if (!querySnapshot.isEmpty) {
+                    val documentSnapshot = querySnapshot.documents[0]
+                    return documentSnapshot.getString("token")
+                } else {
+                    Log.d("mojError", "No document found for email: $email")
+                    return null // or handle as appropriate for your use case
+                }
+            } catch (e: Exception) {
+                Log.d("mojError", "An error occurred: $e")
+                return null // or handle as appropriate for your use case
+            }
+        } else {
+            Log.d("mojError", "Email is empty")
+            return null // or handle as appropriate for your use case
+        }
+    }
+
 
     override suspend fun removeConnections(connectionId: String) {
         val documentReference =
