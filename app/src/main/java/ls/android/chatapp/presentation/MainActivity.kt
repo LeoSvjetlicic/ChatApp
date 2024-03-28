@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
@@ -84,6 +86,7 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         modifier = Modifier.fillMaxSize(),
                         viewModel = hiltViewModel(),
+                        isLoggedIn = Firebase.auth.currentUser!=null,
                         onAddButtonClick = { onAddClick() },
                         onShowButtonClick = { onShowQRCodeClick() },
                         setConnectionViewModel = { connectionsViewModel = it })

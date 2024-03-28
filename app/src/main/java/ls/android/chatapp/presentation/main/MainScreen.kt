@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -45,6 +46,7 @@ import ls.android.chatapp.presentation.registration_login.RegistrationLoginRoute
 fun MainScreen(
     modifier: Modifier,
     viewModel: MainViewModel,
+    isLoggedIn: Boolean,
     onAddButtonClick: () -> Unit,
     onShowButtonClick: () -> Unit,
     setConnectionViewModel: (ConnectionsViewModel) -> Unit
@@ -87,7 +89,11 @@ fun MainScreen(
             }) {
             NavHost(
                 navController = navController,
-                startDestination = Constants.REGISTRATION_LOGIN_ROUTE,
+                startDestination = if (isLoggedIn) {
+                    Constants.CONNECTIONS_ROUTE
+                } else {
+                    Constants.REGISTRATION_LOGIN_ROUTE
+                },
                 modifier = Modifier.fillMaxSize()
             ) {
 
@@ -120,6 +126,11 @@ fun MainScreen(
                             Firebase.auth.signOut()
                             User.id = ""
                             User.name = ""
+                            val options = NavOptions.Builder()
+                                .setPopUpTo(Constants.REGISTRATION_LOGIN_ROUTE, true)
+                                .build()
+
+                            navController.navigate(Constants.REGISTRATION_LOGIN_ROUTE, options)
                         },
                         onShowQRCodeButtonClick = {
                             onShowButtonClick()

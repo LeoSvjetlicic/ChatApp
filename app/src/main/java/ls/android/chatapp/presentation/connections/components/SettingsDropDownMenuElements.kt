@@ -13,8 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import ls.android.chatapp.presentation.ui.LocalCustomColorsPalette
 
 @Composable
 fun SettingsDropDownMenuElements(
@@ -31,7 +31,7 @@ fun SettingsDropDownMenuElements(
                 .background(MaterialTheme.colorScheme.background)
                 .border(
                     1.dp,
-                    LocalCustomColorsPalette.current.textColor,
+                    Color.Gray,
                     RoundedCornerShape(8.dp)
                 )
         )

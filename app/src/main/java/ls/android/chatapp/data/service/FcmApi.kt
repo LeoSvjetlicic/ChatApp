@@ -6,7 +6,7 @@ import retrofit2.http.POST
 
 interface FcmApi {
 
-    @POST("/send")
+    @POST("/firebase/notification")
     suspend fun sendMessage(
         @Body body: SendMessageDto
     )
