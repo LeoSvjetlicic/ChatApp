@@ -1,4 +1,4 @@
-package ls.android.chatapp.presentation.di
+package ls.android.chatapp.di
 
 import android.content.Context
 import com.google.firebase.Firebase
@@ -10,12 +10,18 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import ls.android.chatapp.common.GyroscopeHelper
+import ls.android.chatapp.common.ToastHelper
 import ls.android.chatapp.data.repository.real.AuthenticationRepositoryImpl
 import ls.android.chatapp.data.repository.real.ConnectionRepositoryImpl
 import ls.android.chatapp.data.repository.real.MessageRepositoryImpl
+import ls.android.chatapp.data.service.FcmApi
 import ls.android.chatapp.domain.repository.AuthenticationRepository
 import ls.android.chatapp.domain.repository.ConnectionRepository
 import ls.android.chatapp.domain.repository.MessagesRepository
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -35,22 +41,44 @@ object AppModule {
     fun provideConnectionRepository(
         db: FirebaseFirestore,
         auth: FirebaseAuth,
-        @ApplicationContext context: Context
+        toastHelper: ToastHelper
     ): ConnectionRepository =
-        ConnectionRepositoryImpl(db, auth, context)
+        ConnectionRepositoryImpl(db, auth, toastHelper)
 
     @Provides
     @Singleton
     fun provideMessagesRepository(
         db: FirebaseFirestore, auth: FirebaseAuth,
-        @ApplicationContext context: Context
+        toastHelper: ToastHelper
     ): MessagesRepository =
-        MessageRepositoryImpl(db, auth, context)
+        MessageRepositoryImpl(db, auth, toastHelper)
 
     @Provides
     @Singleton
     fun provideAuthenticationRepository(
-        auth: FirebaseAuth, @ApplicationContext context: Context
+        auth: FirebaseAuth,
+        toastHelper: ToastHelper
     ): AuthenticationRepository =
-        AuthenticationRepositoryImpl(auth, context)
+        AuthenticationRepositoryImpl(auth, toastHelper)
+
+    @Provides
+    @Singleton
+    fun provideToastHelper(
+        @ApplicationContext context: Context
+    ): ToastHelper =
+        ToastHelper(context)
+
+    @Provides
+    fun provideAndroidGyroscope(
+        @ApplicationContext context: Context
+    ): GyroscopeHelper =
+        GyroscopeHelper(context)
+
+    @Provides
+    fun provideApi(): FcmApi =
+        Retrofit.Builder()
+            .baseUrl("http://localhost:8080/")
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create()
 }

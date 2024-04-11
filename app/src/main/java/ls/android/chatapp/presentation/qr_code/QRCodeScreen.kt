@@ -38,7 +38,7 @@ fun QRCodeScreen(modifier: Modifier, qrCode: Bitmap?) {
         Text(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 50.dp),
+                .padding(top = 100.dp),
             text = "Your QR code",
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold

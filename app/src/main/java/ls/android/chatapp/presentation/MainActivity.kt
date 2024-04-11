@@ -2,6 +2,7 @@ package ls.android.chatapp.presentation
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -12,21 +13,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.AndroidEntryPoint
 import ls.android.chatapp.common.Constants
 import ls.android.chatapp.common.QRCodeGenerator
-import ls.android.chatapp.common.User
+import ls.android.chatapp.data.repository.real.ConnectionRepositoryImpl
 import ls.android.chatapp.presentation.connections.ConnectionsViewModel
 import ls.android.chatapp.presentation.main.MainScreen
 import ls.android.chatapp.presentation.ui.ChatAppTheme
 import java.io.File
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var repository: ConnectionRepositoryImpl
+
     private val qrCodeFilePath = Constants.QR_CODE_VALUE
     private lateinit var storageDir: File
     private lateinit var connectionsViewModel: ConnectionsViewModel
@@ -65,6 +74,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestNotificationPermissions()
         storageDir = File(filesDir, Constants.QR_CODE)
         setContent {
             ChatAppTheme {
@@ -74,10 +84,28 @@ class MainActivity : ComponentActivity() {
                 ) {
                     MainScreen(
                         modifier = Modifier.fillMaxSize(),
+                        viewModel = hiltViewModel(),
+                        isLoggedIn = Firebase.auth.currentUser!=null,
                         onAddButtonClick = { onAddClick() },
                         onShowButtonClick = { onShowQRCodeClick() },
-                        setConnectionViewModel = { connectionsViewModel = it }) //TODO
+                        setConnectionViewModel = { connectionsViewModel = it })
                 }
+            }
+        }
+    }
+
+    private fun requestNotificationPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val hasPermission = ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+            if (!hasPermission) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    0
+                )
             }
         }
     }
@@ -89,7 +117,7 @@ class MainActivity : ComponentActivity() {
             storageDir.listFiles()?.forEach { it.deleteRecursively() }
         }
         QRCodeGenerator.generateAndSaveQRCode(
-            Constants.QR_CODE_APP_START + User.name,
+            Constants.QR_CODE_APP_START + Firebase.auth.currentUser?.email.toString(),
             storageDir,
             qrCodeFilePath
         )

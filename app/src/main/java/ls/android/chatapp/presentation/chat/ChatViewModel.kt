@@ -16,6 +16,12 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ls.android.chatapp.common.GyroscopeHelper
+import ls.android.chatapp.data.service.FcmApi
+import ls.android.chatapp.domain.model.Connection
+import ls.android.chatapp.domain.model.NotificationBody
+import ls.android.chatapp.domain.model.NotificationState
+import ls.android.chatapp.domain.model.SendMessageDto
 import ls.android.chatapp.domain.repository.ConnectionRepository
 import ls.android.chatapp.domain.repository.MessagesRepository
 
@@ -24,25 +30,53 @@ class ChatViewModel @AssistedInject constructor(
     @Assisted val connectionId: String,
     private val repository: MessagesRepository,
     private val connectionRepository: ConnectionRepository,
-    private val auth: FirebaseAuth
+    val gyroscope: GyroscopeHelper,
+    private val auth: FirebaseAuth,
+    private val api: FcmApi
 ) : ViewModel() {
+
     @AssistedFactory
     fun interface ChatViewModelFactory {
-        fun create(connection: String?): ChatViewModel
+        fun create(connectionId: String?): ChatViewModel
     }
+
+    private var notificationState by mutableStateOf(NotificationState())
 
     var messageText: String by mutableStateOf("")
     var isSent: Boolean by mutableStateOf(false)
-    private val receiverId = connectionId.replace(auth.currentUser!!.email!!, "")
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val messages: Flow<ChatViewState> = repository.getMessages(connectionId).mapLatest {
-        ChatViewState(connectionId, repository.getReceiver(receiverId), it)
+        val connection = connectionRepository.getConnection(connectionId)
+        ChatViewState(connectionId, repository.getReceiver(getReceiverId(connection)), it)
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000L),
+        started = SharingStarted.Eagerly,
         initialValue = ChatViewState()
     )
+
+    private fun sendMessage() {
+        viewModelScope.launch {
+            val connection = connectionRepository.getConnection(connectionId)
+            val receiverEmail = getReceiverId(connection)
+            val receiverToken = connectionRepository.getConnectionMessageToken(receiverEmail)
+            if (receiverToken != null) {
+                val messageDto = SendMessageDto(
+                    to = receiverToken,
+                    notification = NotificationBody(
+                        "New Message!",
+                        repository.getReceiver(receiverEmail) + " sent you a message"
+                    )
+                )
+                try {
+                    api.sendMessage(messageDto)
+                    notificationState = notificationState.copy(messageText = "")
+                } catch (e: Exception) {
+                    println(e.message)
+                }
+            }
+        }
+    }
 
     fun onUserInputChanged(value: String) {
         messageText = value
@@ -63,16 +97,10 @@ class ChatViewModel @AssistedInject constructor(
             repository.sendMessage(text.trim(), connectionId)
             isSent = true
             messageText = ""
+            sendMessage()
         }
     }
 
-    fun onUpdateConnectionStatus(connectionId: String, increment: Boolean) {
-        viewModelScope.launch {
-            connectionRepository.updateConnections(connectionId, increment)
-        }
-    }
-
-    fun onClipClick() {
-//        TODO
-    }
+    private fun getReceiverId(connection: Connection): String =
+        connection.name.replace(auth.currentUser!!.email!!, "")
 }

@@ -11,8 +11,9 @@ import java.io.FileInputStream
 import javax.inject.Inject
 
 @HiltViewModel
-class QRCodeViewModel @Inject constructor(app: Application): ViewModel() {
+class QRCodeViewModel @Inject constructor(app: Application) : ViewModel() {
     var bitmap: Bitmap? = null
+
     init {
         val qrCodeFilePath = Constants.QR_CODE_VALUE
         val storageDir = File(app.filesDir, Constants.QR_CODE)

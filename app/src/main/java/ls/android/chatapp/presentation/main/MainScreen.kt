@@ -9,22 +9,30 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import ls.android.chatapp.common.Constants
 import ls.android.chatapp.presentation.chat.ChatRoute
 import ls.android.chatapp.presentation.chat.ChatViewModel
-import ls.android.chatapp.presentation.common.components.TopBar
+import ls.android.chatapp.presentation.components.TopBar
 import ls.android.chatapp.presentation.connections.ConnectionRoute
 import ls.android.chatapp.presentation.connections.ConnectionsViewModel
 import ls.android.chatapp.presentation.navigation.ChatRoute
@@ -36,10 +44,19 @@ import ls.android.chatapp.presentation.registration_login.RegistrationLoginRoute
 @Composable
 fun MainScreen(
     modifier: Modifier,
+    viewModel: MainViewModel,
+    isLoggedIn: Boolean,
     onAddButtonClick: () -> Unit,
     onShowButtonClick: () -> Unit,
     setConnectionViewModel: (ConnectionsViewModel) -> Unit
 ) {
+    var id by remember {
+        mutableStateOf("")
+    }
+    val density = LocalDensity.current.density
+    LaunchedEffect(viewModel.isChatVisible.value) {
+        viewModel.updateConnections(id)
+    }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val showTopBar by remember {
@@ -59,14 +76,23 @@ fun MainScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp)
-                ) { navController.popBackStack() }
+                ) { navController.navigateUp() }
             }
         }
     ) {
-        Surface(modifier = Modifier.fillMaxSize()) {
+        Surface(modifier = Modifier
+            .fillMaxSize()
+            .onGloballyPositioned {
+                viewModel.maxX.floatValue = it.size.width / density
+                viewModel.maxY.floatValue = it.size.height / density
+            }) {
             NavHost(
                 navController = navController,
-                startDestination = Constants.REGISTRATION_LOGIN_ROUTE,
+                startDestination = if (isLoggedIn) {
+                    Constants.CONNECTIONS_ROUTE
+                } else {
+                    Constants.REGISTRATION_LOGIN_ROUTE
+                },
                 modifier = Modifier.fillMaxSize()
             ) {
 
@@ -84,15 +110,25 @@ fun MainScreen(
                 }
 
                 composable(Constants.CONNECTIONS_ROUTE) {
-                    val viewModel = hiltViewModel<ConnectionsViewModel>()
-                    setConnectionViewModel(viewModel)
+                    val connectionViewModel = hiltViewModel<ConnectionsViewModel>()
+                    setConnectionViewModel(connectionViewModel)
                     ConnectionRoute(
                         modifier = Modifier.padding(16.dp),
-                        viewModel = viewModel,
+                        viewModel = connectionViewModel,
                         onItemClick = {
                             navController.navigate(ChatRoute.createNavigationRoute(it))
                         },
                         onAddButtonClick = { onAddButtonClick() },
+                        onDropDownElementClick = {
+//                          returns String in case of adding new settings elements
+                            navController.navigateUp()
+                            Firebase.auth.signOut()
+                            val options = NavOptions.Builder()
+                                .setPopUpTo(Constants.REGISTRATION_LOGIN_ROUTE, true)
+                                .build()
+
+                            navController.navigate(Constants.REGISTRATION_LOGIN_ROUTE, options)
+                        },
                         onShowQRCodeButtonClick = {
                             onShowButtonClick()
                             navController.navigate(Constants.QR_CODE_ROUTE)
@@ -112,7 +148,15 @@ fun MainScreen(
                         hiltViewModel<ChatViewModel, ChatViewModel.ChatViewModelFactory> { factory: ChatViewModel.ChatViewModelFactory ->
                             factory.create(connectionId)
                         }
-                    ChatRoute(chatViewModel = chatViewModel)
+
+                    ChatRoute(
+                        chatViewModel = chatViewModel,
+                        maxXInitial = viewModel.maxX.floatValue,
+                        maxYInitial = viewModel.maxY.floatValue
+                    ) { clickedId, isVisible ->
+                        viewModel.isChatVisible.value = isVisible
+                        id = clickedId
+                    }
                 }
             }
         }

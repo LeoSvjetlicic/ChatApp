@@ -2,6 +2,8 @@ package ls.android.chatapp.presentation.connections
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -10,6 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import ls.android.chatapp.domain.model.Connection
 import ls.android.chatapp.domain.repository.ConnectionRepository
 import javax.inject.Inject
@@ -19,6 +22,13 @@ import javax.inject.Inject
 class ConnectionsViewModel @Inject constructor(
     private val repository: ConnectionRepository,
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            repository.updateConnectionMessageToken(Firebase.messaging.token.await())
+        }
+    }
+
     private val _currentConnections = MutableStateFlow<List<Connection>>(emptyList())
     val connections: Flow<ConnectionScreenState> = repository.getConnections()
         .mapLatest {

@@ -20,7 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ls.android.chatapp.common.User
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import ls.android.chatapp.domain.model.Connection
 import ls.android.chatapp.presentation.ui.DarkBlue
 import ls.android.chatapp.presentation.ui.DarkGray
@@ -74,7 +75,7 @@ fun ConnectionItem(
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(1F)
+                    .weight(1f)
             ) {
 
                 Text(
@@ -91,13 +92,13 @@ fun ConnectionItem(
 }
 
 fun getReceiver(receiverId: String): String {
-    val parts = receiverId.replace(User.name,"").split(".", "@").map { string ->
-        string.replaceFirstChar {
-            if (it.isLowerCase()) it.titlecase(
-                Locale.ROOT
-            ) else it.toString()
+    val parts = receiverId.replace(Firebase.auth.currentUser?.email ?: "", "").split(".", "@")
+        .map { string ->
+            string.replaceFirstChar {
+                if (it.isLowerCase())
+                    it.titlecase(Locale.ROOT) else it.toString()
+            }
         }
-    }
 
     return parts[0]
 }

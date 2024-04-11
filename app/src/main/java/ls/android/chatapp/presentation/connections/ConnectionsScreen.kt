@@ -1,29 +1,40 @@
 package ls.android.chatapp.presentation.connections
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import ls.android.chatapp.R
-import ls.android.chatapp.presentation.common.components.ActionButton
+import ls.android.chatapp.presentation.components.ActionButton
 import ls.android.chatapp.presentation.connections.components.ConnectionItem
+import ls.android.chatapp.presentation.connections.components.CustomPopup
+import ls.android.chatapp.presentation.connections.components.PopupState
+import ls.android.chatapp.presentation.connections.components.SettingsDropDownMenuElements
+import ls.android.chatapp.presentation.ui.DarkBlue
 
 @Composable
 fun ConnectionRoute(
@@ -31,6 +42,7 @@ fun ConnectionRoute(
     viewModel: ConnectionsViewModel,
     onItemClick: (String) -> Unit,
     onAddButtonClick: () -> Unit,
+    onDropDownElementClick: (String) -> Unit,
     onShowQRCodeButtonClick: () -> Unit
 ) {
     val connections by viewModel.connections.collectAsState(initial = ConnectionScreenState())
@@ -39,6 +51,7 @@ fun ConnectionRoute(
         connectionScreenState = connections,
         onItemClick = { onItemClick(it) },
         onAddButtonClick = { onAddButtonClick() },
+        onDropDownElementClick = onDropDownElementClick,
         onShowQRCodeButtonClick = { onShowQRCodeButtonClick() }
     )
 }
@@ -49,31 +62,64 @@ fun ConnectionsScreen(
     connectionScreenState: ConnectionScreenState,
     onItemClick: (String) -> Unit,
     onAddButtonClick: () -> Unit,
+    onDropDownElementClick: (String) -> Unit,
     onShowQRCodeButtonClick: () -> Unit,
 ) {
-    val focusManager = LocalFocusManager.current
-    val interactionSource = remember { MutableInteractionSource() }
-
+    val topEndState = remember { PopupState(false) }
     ConstraintLayout(
         modifier = modifier
             .fillMaxSize()
-            .clickable(interactionSource = interactionSource, indication = null) {
-                focusManager.clearFocus()
-            }) {
+    ) {
         val (text, connections, button) = createRefs()
-
-        Text(
+        val popUp = createRef()
+        Row(
             modifier = Modifier
                 .constrainAs(text) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
                 }
                 .padding(vertical = 16.dp),
-            text = "Your connections",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
-
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Your connections",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Image(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(DarkBlue)
+                    .padding(4.dp)
+                    .clickable { topEndState.isVisible = !topEndState.isVisible },
+                painter = painterResource(id = R.drawable.ic_settings),
+                contentDescription = null
+            )
+        }
+        Box(
+            modifier = Modifier
+                .constrainAs(popUp) {
+                    top.linkTo(text.bottom)
+                    end.linkTo(parent.end)
+                }
+                .padding(top = 8.dp, end = 16.dp)
+        ) {
+            CustomPopup(
+                modifier = Modifier.width(100.dp),
+                popupState = topEndState,
+                onDismissRequest = { topEndState.isVisible = false }) {
+                SettingsDropDownMenuElements(
+                    modifier = Modifier.padding(end = 16.dp),
+                    elements = listOf("Sign out")
+                ) {
+                    onDropDownElementClick(it)
+                    topEndState.isVisible = false
+                }
+            }
+        }
         LazyColumn(modifier = Modifier.constrainAs(connections) {
             top.linkTo(text.bottom)
             start.linkTo(parent.start)
@@ -88,7 +134,7 @@ fun ConnectionsScreen(
                         .padding(vertical = 4.dp)
                         .height(50.dp),
                     connection = connection,
-                    onItemClick = { onItemClick(connection.name) })
+                    onItemClick = { onItemClick(connection.id) })
             }
         }
 
