@@ -24,7 +24,6 @@ import com.journeyapps.barcodescanner.ScanOptions
 import dagger.hilt.android.AndroidEntryPoint
 import ls.android.chatapp.common.Constants
 import ls.android.chatapp.common.QRCodeGenerator
-import ls.android.chatapp.common.User
 import ls.android.chatapp.data.repository.real.ConnectionRepositoryImpl
 import ls.android.chatapp.presentation.connections.ConnectionsViewModel
 import ls.android.chatapp.presentation.main.MainScreen
@@ -118,7 +117,7 @@ class MainActivity : ComponentActivity() {
             storageDir.listFiles()?.forEach { it.deleteRecursively() }
         }
         QRCodeGenerator.generateAndSaveQRCode(
-            Constants.QR_CODE_APP_START + User.name,
+            Constants.QR_CODE_APP_START + Firebase.auth.currentUser?.email.toString(),
             storageDir,
             qrCodeFilePath
         )

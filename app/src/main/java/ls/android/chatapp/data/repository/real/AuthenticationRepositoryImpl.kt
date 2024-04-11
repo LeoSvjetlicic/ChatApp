@@ -5,7 +5,6 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.suspendCancellableCoroutine
 import ls.android.chatapp.common.ToastHelper
-import ls.android.chatapp.common.User
 import ls.android.chatapp.domain.repository.AuthenticationRepository
 import kotlin.coroutines.resume
 
@@ -20,8 +19,6 @@ class AuthenticationRepositoryImpl(
                 db.createUserWithEmailAndPassword(userName.trim(), password.trim())
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            val user = db.currentUser
-                            User.name = user?.email.toString()
                             continuation.resume(true)
                         } else {
                             toastHelper.createToast("Registration failed", Toast.LENGTH_SHORT)
@@ -45,8 +42,6 @@ class AuthenticationRepositoryImpl(
                     db.signInWithEmailAndPassword(userName.trim(), password.trim())
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                val user = db.currentUser
-                                User.name = user?.email.toString()
                                 continuation.resume(true)
                             } else {
                                 toastHelper.createToast("Login failed", Toast.LENGTH_SHORT)

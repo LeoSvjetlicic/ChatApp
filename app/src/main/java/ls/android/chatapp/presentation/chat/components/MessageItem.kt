@@ -21,8 +21,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import ls.android.chatapp.R
-import ls.android.chatapp.common.User
 import ls.android.chatapp.domain.model.Message
 import ls.android.chatapp.presentation.ui.DarkBlue_p70
 import ls.android.chatapp.presentation.ui.DarkGray
@@ -36,7 +37,7 @@ fun MessageItem(
 ) {
     val interactionSource = MutableInteractionSource()
     val bgColor =
-        if (message.sender == User.name) {
+        if (message.sender == Firebase.auth.currentUser?.email.toString()) {
             IceBlue_p70
         } else {
             DarkBlue_p70
@@ -46,7 +47,7 @@ fun MessageItem(
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .padding(start = 16.dp, end = 24.dp),
-        horizontalArrangement = if (message.sender == User.name) {
+        horizontalArrangement = if (message.sender == Firebase.auth.currentUser?.email.toString()) {
             Arrangement.End
         } else {
             Arrangement.Start

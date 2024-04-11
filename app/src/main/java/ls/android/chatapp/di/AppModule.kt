@@ -77,7 +77,7 @@ object AppModule {
     @Provides
     fun provideApi(): FcmApi =
         Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080/")
+            .baseUrl("http://localhost:8080/")
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create()

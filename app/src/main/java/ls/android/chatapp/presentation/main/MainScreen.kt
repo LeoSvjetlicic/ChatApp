@@ -30,7 +30,6 @@ import androidx.navigation.navArgument
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import ls.android.chatapp.common.Constants
-import ls.android.chatapp.common.User
 import ls.android.chatapp.presentation.chat.ChatRoute
 import ls.android.chatapp.presentation.chat.ChatViewModel
 import ls.android.chatapp.presentation.components.TopBar
@@ -124,8 +123,6 @@ fun MainScreen(
 //                          returns String in case of adding new settings elements
                             navController.navigateUp()
                             Firebase.auth.signOut()
-                            User.id = ""
-                            User.name = ""
                             val options = NavOptions.Builder()
                                 .setPopUpTo(Constants.REGISTRATION_LOGIN_ROUTE, true)
                                 .build()
