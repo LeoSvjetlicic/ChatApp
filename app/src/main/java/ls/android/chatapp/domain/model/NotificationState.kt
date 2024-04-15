@@ -7,10 +7,13 @@ data class NotificationState(
 
 data class SendMessageDto(
     val to: String,
-    val notification: NotificationBody
+    val notification: Notification
 )
 
+data class Notification(
+    val notification:NotificationBody
+)
 data class NotificationBody(
     val title: String,
-    val body: String
+    val data: String
 )

@@ -77,7 +77,7 @@ object AppModule {
     @Provides
     fun provideApi(): FcmApi =
         Retrofit.Builder()
-            .baseUrl("http://localhost:8080/")
+            .baseUrl("https://chatappbackend-7a9e.onrender.com/")
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create()

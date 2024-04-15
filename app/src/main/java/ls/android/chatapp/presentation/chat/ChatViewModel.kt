@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import ls.android.chatapp.common.GyroscopeHelper
 import ls.android.chatapp.data.service.FcmApi
 import ls.android.chatapp.domain.model.Connection
+import ls.android.chatapp.domain.model.Notification
 import ls.android.chatapp.domain.model.NotificationBody
 import ls.android.chatapp.domain.model.NotificationState
 import ls.android.chatapp.domain.model.SendMessageDto
@@ -63,9 +64,11 @@ class ChatViewModel @AssistedInject constructor(
             if (receiverToken != null) {
                 val messageDto = SendMessageDto(
                     to = receiverToken,
-                    notification = NotificationBody(
-                        "New Message!",
-                        repository.getReceiver(receiverEmail) + " sent you a message"
+                    notification = Notification(
+                        NotificationBody(
+                            "New Message!",
+                            repository.getReceiver(receiverEmail) + " sent you a message"
+                        )
                     )
                 )
                 try {
