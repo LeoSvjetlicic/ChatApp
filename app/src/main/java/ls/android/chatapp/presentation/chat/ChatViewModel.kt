@@ -103,7 +103,11 @@ class ChatViewModel @AssistedInject constructor(
             sendMessage()
         }
     }
-
+    fun updateConnectionStatus(status: Boolean) {
+        viewModelScope.launch {
+            connectionRepository.updateConnection(connectionId, status)
+        }
+    }
     private fun getReceiverId(connection: Connection): String =
         connection.name.replace(auth.currentUser!!.email!!, "")
 }

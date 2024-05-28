@@ -1,5 +1,7 @@
 package ls.android.chatapp.presentation.connections.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +15,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,10 +29,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.delay
 import ls.android.chatapp.domain.model.Connection
 import ls.android.chatapp.presentation.ui.DarkBlue
 import ls.android.chatapp.presentation.ui.DarkGray
 import ls.android.chatapp.presentation.ui.IceBlue
+import ls.android.chatapp.presentation.ui.LightRed
+import ls.android.chatapp.presentation.ui.Red
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -37,6 +47,22 @@ fun ConnectionItem(
     connection: Connection,
     onItemClick: (String) -> Unit
 ) {
+    var isDark by remember {
+        mutableStateOf(false)
+    }
+    val animatedColor = animateColorAsState(
+        targetValue = if (isDark) Red else LightRed,
+        animationSpec = tween(durationMillis = 1000), label = "" // Adjust duration as needed
+    )
+
+    var shouldChange by remember {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(shouldChange) {
+        isDark = !isDark
+        delay(1000)
+        shouldChange = !shouldChange
+    }
     Card(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
@@ -77,7 +103,16 @@ fun ConnectionItem(
                     .fillMaxHeight()
                     .weight(1f)
             ) {
-
+                if (connection.status == 1) {
+                    Text(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 8.dp, end = 8.dp),
+                        text = "In Chat",
+                        fontSize = 12.sp,
+                        color = animatedColor.value
+                    )
+                }
                 Text(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)

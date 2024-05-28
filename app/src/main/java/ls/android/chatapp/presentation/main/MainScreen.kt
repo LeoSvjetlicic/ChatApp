@@ -47,8 +47,10 @@ fun MainScreen(
     viewModel: MainViewModel,
     isLoggedIn: Boolean,
     onAddButtonClick: () -> Unit,
+    toggleIsChatVisible: (Boolean) -> Unit,
     onShowButtonClick: () -> Unit,
-    setConnectionViewModel: (ConnectionsViewModel) -> Unit
+    setConnectionViewModel: (ConnectionsViewModel) -> Unit,
+    setMessageViewModel: (ChatViewModel) -> Unit
 ) {
     var id by remember {
         mutableStateOf("")
@@ -68,6 +70,10 @@ fun MainScreen(
             }
         }
     }
+    LaunchedEffect(navBackStackEntry?.destination?.route) {
+        toggleIsChatVisible(navBackStackEntry?.destination?.route?.contains(Constants.CHAT_ROUTE)!!)
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -148,6 +154,7 @@ fun MainScreen(
                         hiltViewModel<ChatViewModel, ChatViewModel.ChatViewModelFactory> { factory: ChatViewModel.ChatViewModelFactory ->
                             factory.create(connectionId)
                         }
+                    setMessageViewModel(chatViewModel)
 
                     ChatRoute(
                         chatViewModel = chatViewModel,

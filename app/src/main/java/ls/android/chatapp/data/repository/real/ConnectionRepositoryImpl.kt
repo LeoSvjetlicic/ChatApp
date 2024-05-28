@@ -87,7 +87,7 @@ class ConnectionRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateConnections(connectionId: String, increment: Boolean) {
+    override suspend fun updateConnection(connectionId: String, increment: Boolean) {
         if (connectionId.isNotBlank()) {
             val connectionRef: DocumentReference =
                 db.collection(Constants.FIREBASE_CONNECTION).document(connectionId)

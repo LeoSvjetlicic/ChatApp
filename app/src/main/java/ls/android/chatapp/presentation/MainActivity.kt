@@ -25,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import ls.android.chatapp.common.Constants
 import ls.android.chatapp.common.QRCodeGenerator
 import ls.android.chatapp.data.repository.real.ConnectionRepositoryImpl
+import ls.android.chatapp.presentation.chat.ChatViewModel
 import ls.android.chatapp.presentation.connections.ConnectionsViewModel
 import ls.android.chatapp.presentation.main.MainScreen
 import ls.android.chatapp.presentation.ui.ChatAppTheme
@@ -35,10 +36,11 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     @Inject
     lateinit var repository: ConnectionRepositoryImpl
-
+    private var isChatOpen: Boolean = false
     private val qrCodeFilePath = Constants.QR_CODE_VALUE
     private lateinit var storageDir: File
     private lateinit var connectionsViewModel: ConnectionsViewModel
+    private lateinit var chatViewModel: ChatViewModel
     private val permissionRequestLauncher =
         registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions(),
@@ -72,6 +74,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        if (isChatOpen) {
+            chatViewModel.updateConnectionStatus(false)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isChatOpen) {
+            chatViewModel.updateConnectionStatus(true)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestNotificationPermissions()
@@ -88,7 +104,11 @@ class MainActivity : ComponentActivity() {
                         isLoggedIn = Firebase.auth.currentUser!=null,
                         onAddButtonClick = { onAddClick() },
                         onShowButtonClick = { onShowQRCodeClick() },
-                        setConnectionViewModel = { connectionsViewModel = it })
+                        toggleIsChatVisible = {
+                            isChatOpen = it
+                        },
+                        setConnectionViewModel = { connectionsViewModel = it },
+                        setMessageViewModel = { chatViewModel = it })
                 }
             }
         }

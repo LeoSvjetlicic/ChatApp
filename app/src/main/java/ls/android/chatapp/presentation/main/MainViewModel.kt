@@ -24,12 +24,12 @@ class MainViewModel @Inject constructor(
             if (connectionId.isNotBlank()) {
                 if (isChatVisible.value) {
                     if (lastIncrementValue.intValue != 1) {
-                        repositoryImpl.updateConnections(connectionId, true)
+                        repositoryImpl.updateConnection(connectionId, true)
                         lastIncrementValue.intValue = 1
                     }
                 } else {
                     if (lastIncrementValue.intValue != -1) {
-                        repositoryImpl.updateConnections(connectionId, false)
+                        repositoryImpl.updateConnection(connectionId, false)
                         lastIncrementValue.intValue = -1
                     }
                 }
