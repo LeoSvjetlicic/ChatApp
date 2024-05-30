@@ -87,8 +87,12 @@ class ConnectionRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateConnection(connectionId: String, increment: Boolean) {
-        if (connectionId.isNotBlank()) {
+    override suspend fun updateConnection(
+        connectionId: String,
+        increment: Boolean,
+        shouldDelete: Boolean
+    ) {
+        if (shouldDelete) {
             val connectionRef: DocumentReference =
                 db.collection(Constants.FIREBASE_CONNECTION).document(connectionId)
             try {
@@ -97,16 +101,33 @@ class ConnectionRepositoryImpl @Inject constructor(
                     connectionId,
                     currentStatus,
                     increment,
-                    connectionRef
+                    connectionRef,
+                    true
                 )
             } catch (e: Exception) {
                 Log.d("mojError", "An error occurred: $e")
             }
         } else {
-            Log.d("mojError", "Id is empty")
+            if (connectionId.isNotBlank()) {
+                val connectionRef: DocumentReference =
+                    db.collection(Constants.FIREBASE_CONNECTION).document(connectionId)
+                try {
+                    val currentStatus = connectionRef.get().await().get("status").toString().toInt()
+                    update(
+                        connectionId,
+                        currentStatus,
+                        increment,
+                        connectionRef,
+                        false
+                    )
+                } catch (e: Exception) {
+                    Log.d("mojError", "An error occurred: $e")
+                }
+            } else {
+                Log.d("mojError", "Id is empty")
+            }
         }
     }
-
     override suspend fun updateConnectionMessageToken(token: String) {
         val email = auth.currentUser?.email!!
         if (token.isNotBlank()) {
@@ -157,7 +178,7 @@ class ConnectionRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun removeConnections(connectionId: String) {
+    override suspend fun removeConnection(connectionId: String) {
         val documentReference =
             db.collection(Constants.FIREBASE_CONNECTION).document(connectionId)
 
@@ -181,37 +202,55 @@ class ConnectionRepositoryImpl @Inject constructor(
         connectionId: String,
         currentStatus: Int,
         increment: Boolean,
-        connectionRef: DocumentReference
+        connectionRef: DocumentReference,
+        shouldDelete: Boolean
     ) {
         try {
-            if (!increment) {
-                val newStatus = currentStatus - 1
-                val fieldUpdates = mapOf(
-                    "status" to newStatus
-                )
-                connectionRef.update(fieldUpdates)
-                if (currentStatus == 1) {
-                    val query = db.collection(Constants.FIREBASE_MESSAGES)
-                        .whereEqualTo("connectionId", connectionId)
-                    val iLoveATLA = query.get().await()
-                    for (document in iLoveATLA) {
-                        db.collection(Constants.FIREBASE_MESSAGES)
-                            .document(document.id)
-                            .delete()
-                            .addOnSuccessListener {
-                                println("Document successfully deleted: $document")
-                            }
-                            .addOnFailureListener { e ->
-                                println("Error deleting document $document: $e")
-                            }
-                    }
+            if (shouldDelete) {
+                val query = db.collection(Constants.FIREBASE_MESSAGES)
+                    .whereEqualTo("connectionId", connectionId)
+                val iLoveATLA = query.get().await()
+                for (document in iLoveATLA) {
+                    db.collection(Constants.FIREBASE_MESSAGES)
+                        .document(document.id)
+                        .delete()
+                        .addOnSuccessListener {
+                            println("Document successfully deleted: $document")
+                        }
+                        .addOnFailureListener { e ->
+                            println("Error deleting document $document: $e")
+                        }
                 }
             } else {
-                val newStatus = currentStatus + 1
-                val fieldUpdates = mapOf(
-                    "status" to newStatus
-                )
-                connectionRef.update(fieldUpdates)
+                if (!increment) {
+                    val newStatus = currentStatus - 1
+                    val fieldUpdates = mapOf(
+                        "status" to newStatus
+                    )
+                    connectionRef.update(fieldUpdates)
+                    if (currentStatus == 1) {
+                        val query = db.collection(Constants.FIREBASE_MESSAGES)
+                            .whereEqualTo("connectionId", connectionId)
+                        val iLoveATLA = query.get().await()
+                        for (document in iLoveATLA) {
+                            db.collection(Constants.FIREBASE_MESSAGES)
+                                .document(document.id)
+                                .delete()
+                                .addOnSuccessListener {
+                                    println("Document successfully deleted: $document")
+                                }
+                                .addOnFailureListener { e ->
+                                    println("Error deleting document $document: $e")
+                                }
+                        }
+                    }
+                } else {
+                    val newStatus = currentStatus + 1
+                    val fieldUpdates = mapOf(
+                        "status" to newStatus
+                    )
+                    connectionRef.update(fieldUpdates)
+                }
             }
         } catch (e: Exception) {
             println("Something went wrong.")

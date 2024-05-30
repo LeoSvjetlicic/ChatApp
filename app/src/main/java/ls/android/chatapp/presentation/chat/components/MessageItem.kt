@@ -15,8 +15,12 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -35,12 +39,20 @@ fun MessageItem(
     message: Message,
     onDoubleClick: (String) -> Unit
 ) {
-    val interactionSource = MutableInteractionSource()
+    val interactionSource by remember {
+        mutableStateOf(MutableInteractionSource())
+    }
     val bgColor =
         if (message.sender == Firebase.auth.currentUser?.email.toString()) {
             IceBlue_p70
         } else {
             DarkBlue_p70
+        }
+    val textColor =
+        if (message.sender == Firebase.auth.currentUser?.email.toString()) {
+            DarkGray
+        } else {
+            Color.White
         }
     Row(
         Modifier
@@ -80,7 +92,7 @@ fun MessageItem(
                         .wrapContentWidth()
                         .padding(8.dp),
                     text = message.text,
-                    color = DarkGray,
+                    color = textColor,
                     fontSize = 14.sp,
                     lineHeight = 18.sp
                 )

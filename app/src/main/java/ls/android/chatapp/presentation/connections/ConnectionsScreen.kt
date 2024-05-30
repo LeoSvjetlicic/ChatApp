@@ -1,5 +1,6 @@
 package ls.android.chatapp.presentation.connections
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,6 +53,7 @@ fun ConnectionRoute(
         onItemClick = { onItemClick(it) },
         onAddButtonClick = { onAddButtonClick() },
         onDropDownElementClick = onDropDownElementClick,
+        onDeleteItemClick = viewModel::deleteConnection,
         onShowQRCodeButtonClick = { onShowQRCodeButtonClick() }
     )
 }
@@ -61,6 +63,7 @@ fun ConnectionsScreen(
     modifier: Modifier = Modifier,
     connectionScreenState: ConnectionScreenState,
     onItemClick: (String) -> Unit,
+    onDeleteItemClick: (String) -> Unit,
     onAddButtonClick: () -> Unit,
     onDropDownElementClick: (String) -> Unit,
     onShowQRCodeButtonClick: () -> Unit,
@@ -105,19 +108,19 @@ fun ConnectionsScreen(
                     top.linkTo(text.bottom)
                     end.linkTo(parent.end)
                 }
-                .padding(top = 8.dp, end = 16.dp)
+                .padding(end = 16.dp)
         ) {
-            CustomPopup(
-                modifier = Modifier.width(100.dp),
-                popupState = topEndState,
-                onDismissRequest = { topEndState.isVisible = false }) {
-                SettingsDropDownMenuElements(
-                    modifier = Modifier.padding(end = 16.dp),
-                    elements = listOf("Sign out")
-                ) {
-                    onDropDownElementClick(it)
-                    topEndState.isVisible = false
-                }
+                CustomPopup(
+                    modifier = Modifier.width(150.dp),
+                    popupState = topEndState,
+                    onDismissRequest = { topEndState.isVisible = false }) {
+                    SettingsDropDownMenuElements(
+                        modifier = Modifier.padding(end = 16.dp),
+                        elements = listOf("Sign out")
+                    ) {
+                        onDropDownElementClick(it)
+                        topEndState.isVisible = false
+                    }
             }
         }
         LazyColumn(modifier = Modifier.constrainAs(connections) {
@@ -134,6 +137,7 @@ fun ConnectionsScreen(
                         .padding(vertical = 4.dp)
                         .height(50.dp),
                     connection = connection,
+                    onDeleteClick = onDeleteItemClick,
                     onItemClick = { onItemClick(connection.id) })
             }
         }

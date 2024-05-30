@@ -15,12 +15,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import ls.android.chatapp.domain.model.Connection
 import ls.android.chatapp.domain.repository.ConnectionRepository
+import ls.android.chatapp.domain.repository.MessagesRepository
 import javax.inject.Inject
 
 @HiltViewModel
 @OptIn(ExperimentalCoroutinesApi::class)
 class ConnectionsViewModel @Inject constructor(
-    private val repository: ConnectionRepository,
+    private val repository: ConnectionRepository
 ) : ViewModel() {
 
     init {
@@ -44,6 +45,13 @@ class ConnectionsViewModel @Inject constructor(
     fun addItem(scannedData: String) {
         viewModelScope.launch {
             repository.createConnections(scannedData, _currentConnections.value)
+        }
+    }
+    fun deleteConnection(id: String) {
+        viewModelScope.launch {
+            launch { repository.updateConnection(id, increment = false, shouldDelete = true) }
+            launch { repository.removeConnection(id)
+            }
         }
     }
 }

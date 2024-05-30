@@ -3,6 +3,7 @@ package ls.android.chatapp.presentation.connections.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,10 +12,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun SettingsDropDownMenuElements(
@@ -37,14 +42,18 @@ fun SettingsDropDownMenuElements(
         )
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+            modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp)
         ) {
             elements.forEach { element ->
+                val interactionSource by remember {
+                    mutableStateOf(MutableInteractionSource())
+                }
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onElementClick(element) },
-                    text = element
+                        .clickable(interactionSource,null) { onElementClick(element) },
+                    text = element,
+                    fontSize = 20.sp
                 )
             }
         }
