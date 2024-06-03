@@ -45,13 +45,13 @@ class ConnectionRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getConnection(connectionId: String): Connection {
+    override suspend fun getConnection(connectionId: String): Connection? {
         val documentSnapshot = db.collection(Constants.FIREBASE_CONNECTION)
             .document(connectionId)
             .get()
             .await()
 
-        return documentSnapshot.toObject(Connection::class.java)!!
+        return documentSnapshot.toObject(Connection::class.java)
     }
 
     override suspend fun createConnections(
@@ -93,19 +93,23 @@ class ConnectionRepositoryImpl @Inject constructor(
         shouldDelete: Boolean
     ) {
         if (shouldDelete) {
-            val connectionRef: DocumentReference =
-                db.collection(Constants.FIREBASE_CONNECTION).document(connectionId)
-            try {
-                val currentStatus = connectionRef.get().await().get("status").toString().toInt()
-                update(
-                    connectionId,
-                    currentStatus,
-                    increment,
-                    connectionRef,
-                    true
-                )
-            } catch (e: Exception) {
-                Log.d("mojError", "An error occurred: $e")
+            if (connectionId.isNotBlank()) {
+                val connectionRef: DocumentReference =
+                    db.collection(Constants.FIREBASE_CONNECTION).document(connectionId)
+                try {
+                    val currentStatus = connectionRef.get().await().get("status").toString().toInt()
+                    update(
+                        connectionId,
+                        currentStatus,
+                        increment,
+                        connectionRef,
+                        true
+                    )
+                } catch (e: Exception) {
+                    Log.d("mojError", "An error occurred: $e")
+                }
+            } else {
+                Log.d("mojError", "Id is empty")
             }
         } else {
             if (connectionId.isNotBlank()) {

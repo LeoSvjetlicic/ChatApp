@@ -15,9 +15,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,9 +36,7 @@ fun MessageItem(
     message: Message,
     onDoubleClick: (String) -> Unit
 ) {
-    val interactionSource by remember {
-        mutableStateOf(MutableInteractionSource())
-    }
+    val interactionSource = MutableInteractionSource()
     val bgColor =
         if (message.sender == Firebase.auth.currentUser?.email.toString()) {
             IceBlue_p70

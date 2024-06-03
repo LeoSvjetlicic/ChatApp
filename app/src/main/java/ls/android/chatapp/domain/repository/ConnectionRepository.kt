@@ -5,7 +5,7 @@ import ls.android.chatapp.domain.model.Connection
 
 interface ConnectionRepository {
     fun getConnections(): Flow<List<Connection>>
-    suspend fun getConnection(connectionId: String): Connection
+    suspend fun getConnection(connectionId: String): Connection?
     suspend fun updateConnection(
         connectionId: String,
         increment: Boolean,

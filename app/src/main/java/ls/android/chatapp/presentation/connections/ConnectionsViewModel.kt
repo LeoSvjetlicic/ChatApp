@@ -49,9 +49,8 @@ class ConnectionsViewModel @Inject constructor(
     }
     fun deleteConnection(id: String) {
         viewModelScope.launch {
-            launch { repository.updateConnection(id, increment = false, shouldDelete = true) }
-            launch { repository.removeConnection(id)
-            }
+            repository.updateConnection(id, increment = false, shouldDelete = true)
+            repository.removeConnection(id)
         }
     }
 }

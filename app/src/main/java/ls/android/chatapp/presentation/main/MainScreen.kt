@@ -71,7 +71,7 @@ fun MainScreen(
         }
     }
     LaunchedEffect(navBackStackEntry?.destination?.route) {
-        toggleIsChatVisible(navBackStackEntry?.destination?.route?.contains(Constants.CHAT_ROUTE)!!)
+        toggleIsChatVisible(navBackStackEntry?.destination?.route?.contains(Constants.CHAT_ROUTE) == true)
     }
 
     Scaffold(
@@ -152,7 +152,9 @@ fun MainScreen(
                     val connectionId = navBackStackEntry.arguments?.getString(Constants.CHAT_ID)
                     val chatViewModel =
                         hiltViewModel<ChatViewModel, ChatViewModel.ChatViewModelFactory> { factory: ChatViewModel.ChatViewModelFactory ->
-                            factory.create(connectionId)
+                            factory.create(connectionId) {
+                                navController.navigateUp()
+                            }
                         }
                     setMessageViewModel(chatViewModel)
 

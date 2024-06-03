@@ -1,5 +1,6 @@
 package ls.android.chatapp.presentation.chat
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -33,12 +34,13 @@ class ChatViewModel @AssistedInject constructor(
     private val connectionRepository: ConnectionRepository,
     val gyroscope: GyroscopeHelper,
     private val auth: FirebaseAuth,
-    private val api: FcmApi
+    private val api: FcmApi,
+    @Assisted onDelete: () -> Unit
 ) : ViewModel() {
 
     @AssistedFactory
     fun interface ChatViewModelFactory {
-        fun create(connectionId: String?): ChatViewModel
+        fun create(connectionId: String?, onDelete: () -> Unit): ChatViewModel
     }
 
     private var notificationState by mutableStateOf(NotificationState())
@@ -49,7 +51,12 @@ class ChatViewModel @AssistedInject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     val messages: Flow<ChatViewState> = repository.getMessages(connectionId).mapLatest {
         val connection = connectionRepository.getConnection(connectionId)
-        ChatViewState(connectionId, repository.getReceiver(getReceiverId(connection)), it)
+        if (connection == null) {
+            onDelete()
+            ChatViewState()
+        } else {
+            ChatViewState(connectionId, repository.getReceiver(getReceiverId(connection)), it)
+        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
@@ -59,7 +66,7 @@ class ChatViewModel @AssistedInject constructor(
     private fun sendMessage() {
         viewModelScope.launch {
             val connection = connectionRepository.getConnection(connectionId)
-            val receiverEmail = getReceiverId(connection)
+            val receiverEmail = connection?.let { getReceiverId(it) } ?: ""
             val receiverToken = connectionRepository.getConnectionMessageToken(receiverEmail)
             if (receiverToken != null) {
                 val messageDto = SendMessageDto(
